@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.1)
 SETCPP11()
 
 
-set(SOURCES identikit.cpp PCollect.cpp Files.cpp MPIntercept.cpp PluginLoader.cpp)
-add_executable(identikit ${SOURCES})
+set(SOURCES identikeep.cpp PCollect.cpp Files.cpp MPIntercept.cpp PluginLoader.cpp)
+add_executable(identikeep ${SOURCES})
 
 set(SOURCES PCollect.cpp Files.cpp MPIntercept.cpp PluginLoader.cpp)
 add_library(MPIntercept MODULE ${SOURCES})
@@ -17,16 +17,16 @@ include_directories("../include")
 
 
 if(MPI_COMPILE_FLAGS)
-  set_target_properties(identikit PROPERTIES
+  set_target_properties(identikeep PROPERTIES
     COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
 endif()
 
 if(MPI_LINK_FLAGS)
-  set_target_properties(identikit PROPERTIES
+  set_target_properties(identikeep PROPERTIES
     LINK_FLAGS "${MPI_LINK_FLAGS}")
 endif()
 
-target_link_libraries(identikit 
+target_link_libraries(identikeep 
     ${CMAKE_DL_LIBS}
     ${MPI_LIBRARIES}
 )

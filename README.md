@@ -1,20 +1,20 @@
-# Identikit
+# Identikeep
 
-Identikit is a plugin based tool to collect information on the hardware and 
+Identikeep is a plugin based tool to collect information on the hardware and 
 the software implementation of HPC clusters.
 It is written in C++11 and it uses MPI to collect the information.
 
 ## Program guidelines and requirements
 
-The main requirements for the development of Identikit are:
+The main requirements for the development of Identikeep are:
 
   * Compatibility with recent versions of most widespread compilers for scientific software.
   * Minimal dependencies.
   * Cross-platform
 
-As of today, Identikit can be compiled with the following compilers:
+As of today, Identikeep can be compiled with the following compilers:
 
-  * GNU > 4.9 (also 4.8 with external re library)
+  * GNU > 4.8
   * Intel > 15
   * PGI > 17
   * Cray compilers
@@ -28,9 +28,9 @@ See [Docs/Compile.md](Docs/Compile.md)
 
 ### Quick start
 
-Identikit is supposed to be run within the same environment used for the program to be benchmarked.
+Identikeep is supposed to be run within the same environment used for the program to be benchmarked.
 After having prepared the environment with the appropriate modules and 
-environmental variables, just run the `identikit` program with the standard `mpirun`
+environmental variables, just run the `identikeep` program with the standard `mpirun`
 or `srun` interfaces.
 
 By default the program tries to load all the plugins that it finds and 
@@ -44,10 +44,10 @@ Therefore only the plugin associated with that specific implementation of the BL
 routines will be successfully loaded at runtime while the other will fail 
 without impacting on the execution of the whole program.
 
-By default, `identikit` searches for the plugins in the path from which it was launched: a different directory can be specified with the option 
+By default, `identikeep` searches for the plugins in the path from which it was launched: a different directory can be specified with the option 
 `-p`. To specify a list of plugins that must provide information just specify their names proceeded by `[`:
 
-    mpirun ./identikit -p=PATH/TO/PLUGINS [CPU [Mem [OS
+    mpirun ./identikeep -p=PATH/TO/PLUGINS [CPU [Mem [OS
     
 names a case insensitive. An error will be issued if any of these plugins
 fails to load.
@@ -56,10 +56,10 @@ in the current working directory.
 
 For a full list of the available options, run:
 
-    ./identikit --help
+    ./identikeep --help
 
 ### Options
-Here is a full list of `identikit` options:
+Here is a full list of `identikeep` options:
 
 -   `-ls` : list available inspectors at the given PLUGIN_PATH to stdout.
 -   `-p=/path` or `--plugins=/path` : set plugins path.
@@ -74,18 +74,18 @@ Here is a full list of `identikit` options:
 
 
 ## Advanced use
-Identikit provides a tool to intercept the MPI calls of an executable via the PMPI interface. If we need to run Identikit to have a snapshot of the system configuration when a program `MyProg` is launched, there are two different ways.
+Identikeep provides a tool to intercept the MPI calls of an executable via the PMPI interface. If we need to run Identikeep to have a snapshot of the system configuration when a program `MyProg` is launched, there are two different ways.
 
-The first one, let's call it the _standard way_, is to run `identikit` just before `MyProg`, i.e.:
+The first one, let's call it the _standard way_, is to run `identikeep` just before `MyProg`, i.e.:
 
-    mpirun ./identikit [OPTIONS]
+    mpirun ./identikeep [OPTIONS]
     mpirun ./MyProg
 
-The main issue concerning this approach is that we must ensure that both `identikit` and `MyProg` will run on the same computing nodes and (desirably) the same libraries are loaded.
+The main issue concerning this approach is that we must ensure that both `identikeep` and `MyProg` will run on the same computing nodes and (desirably) the same libraries are loaded.
 
-A second way is to exploit a library provided by the Identikit package, `libMPIntercept`, to perform the `identikit` analysis at `MyProg` runtime.
+A second way is to exploit a library provided by the Identikeep package, `libMPIntercept`, to perform the `identikeep` analysis at `MyProg` runtime.
 This is possible by exporting the LD\_PRELOAD environment variable before running `MyProg`.
-In this case, Identikit options are passed via environment variables. Here is a list of these variables:
+In this case, Identikeep options are passed via environment variables. Here is a list of these variables:
 
 - `IDENTIKIT_PATH` : set the path of the plugins (equivalent to the `-p` option of the _standard use_).
 - `IDENTIKIT_COMMENT` : add a comment to the output file (equivalent to the `-c` option of the _standard use_).
@@ -97,7 +97,7 @@ In this case, Identikit options are passed via environment variables. Here is a 
 #### Example
 These commands
 
-    mpirun ./identikit -c="My comment" -p=My/Plugin/Path -t="Mytag" --verbose ]OMP [Mem [CPU 
+    mpirun ./identikeep -c="My comment" -p=My/Plugin/Path -t="Mytag" --verbose ]OMP [Mem [CPU 
     mpirun ./MyProg
 
 should provide an output similar to:
