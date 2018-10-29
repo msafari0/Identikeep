@@ -72,6 +72,83 @@ Here is a full list of `identikeep` options:
 -   `--debug` : print debug info.
 -   `--verbose` : print debug info.
 
+## Output
+
+Identikeep system analysis is stored in the output file `sysinfo.json` (or `sysinfo_TAG.json` if the option `--tag=TAG` is provided).
+The output format is [.json](json.org), and contains the information collected on each computing node.
+Plugins are loaded by each MPI process: depending on the plugin implementation, a single plugin may be executed only once per physical computing node, or by each MPI process.
+
+#### Output file example
+For example, it is possible to run `identikeep` on two computing nodes, with a total of 8 MPI processes (i.e. 4 for each computing node).
+Let's imagine to have three installed plugins: `Plugin1` and `Plugin3` will run only once for each computing node, while `Plugin2` will be executed by each MPI process.
+In this case, the output `sysinfo.json` will have the following structure:
+
+
+    {
+        "Comment": "MyComment",                 *File comment
+        "DateTime": "yyyy-mm-dd hh:mm:ss",      *Time at which identikeep was executed
+        "NODE_1_NAME": {                        *Name of the first computing node
+            "0 (0)": {                          *Rank of the MPI process on the node, while, in brakets, global rank of the process
+                "Plugin1": {                   
+                    ...                         *Results of Plugin1 computed by the master of the node
+                },
+                "Plugin2": {
+                    ...                         *Results of Plugin2 computed by the master of the node
+                },
+                "Plugin3": {
+                    ...                         *Results of Plugin3 computed by the master of the node
+                }
+            },
+            "1 (1)": {
+                "Plugin2": {
+                    ...                         *Results of Plugin2 computed by process 1 (1). (Plugin1 and Plugin3 run one per node, and are executed only by the master of the node) 
+                }
+            },        
+            "2 (2)": {
+                "Plugin2": {                    
+                    ...                         *Results of Plugin2 computed by process 2 (2).
+                }
+            },  
+            "3 (3)": {
+                "Plugin2": {
+                    ...                         *Results of Plugin2 computed by process 3 (3).
+                }
+            }
+        "NODE_2_NAME": {                        *The same is performed for the second computing node, where the master inside the node is the only one to execute Plugin1 and Plugin3
+            "0 (4)": {
+                "Plugin1": {
+                    ...
+                },
+                "Plugin2": {
+                    ...
+                },
+                "Plugin3": {
+                    ...
+                }
+            },
+            "1 (5)": {
+                "Plugin2": {
+                    ...
+                }
+            },        
+            "2 (6)": {
+                "Plugin2": {
+                    ...
+                }
+            },  
+            "2 (7)": {
+                "Plugin2": {
+                    ...
+                }
+            }
+        },
+        "Execution Time": 0.0                   *Execution time of the analysis (in seconds)
+    }
+    
+### Log file
+Depending on the verbosity level provided as option, identikit produces log files. Logs are written by each MPI process, and their name is `sysinfo(_TAG).json.log-N` where `N` is the global rank of the process.
+            
+        
 
 ## Advanced use
 Identikeep provides a tool to intercept the MPI calls of an executable via the PMPI interface. If we need to run Identikeep to have a snapshot of the system configuration when a program `MyProg` is launched, there are two different ways.
