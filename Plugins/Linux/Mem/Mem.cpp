@@ -13,7 +13,7 @@
 bool MEM::Collect(int argc, char *argv[])
 {
     bool is_ok=true;
-    LOG_INFO << "Parsing " <<  this->Name() << " info...";
+    LOG_VERBOSE << "Parsing " <<  this->Name() << " info...";
     
     /* Open /proc/meminfo for reading. This should be perfectly fine on linux */
     std::ifstream ifs(MEM_INFO_FILE);

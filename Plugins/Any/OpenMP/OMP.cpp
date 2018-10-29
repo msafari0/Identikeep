@@ -10,7 +10,7 @@ bool OMP::Collect(int argc, char *argv[])
 {
     bool is_ok = true;
 
-    LOG_INFO << "Parsing " << this->Name() << " info...";
+    LOG_VERBOSE << "Parsing " << this->Name() << " info...";
     
     /* From specs
      * The _OPENMP macro name is defined by OpenMP-compliant implementations as the

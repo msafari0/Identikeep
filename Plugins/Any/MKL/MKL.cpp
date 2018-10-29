@@ -9,7 +9,7 @@ bool MKL::Collect(int argc, char *argv[])
 {
     bool is_ok = true;
 
-    LOG_INFO << "Parsing " << this->Name() << " info...";
+    LOG_VERBOSE << "Parsing " << this->Name() << " info...";
     
      
     int v = INTEL_MKL_VERSION;

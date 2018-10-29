@@ -6,14 +6,12 @@
 #include <sys/utsname.h>
 #include <sys/stat.h>
 #include <vector>
+#include "plog/Log.h"
 
 #include "PCollect.h"
 
 // Arg parsing
 #include "argh.h"
-
-extern std::chrono::time_point<std::chrono::system_clock> start_time;
-extern std::chrono::time_point<std::chrono::system_clock> end_time;
 
 
 
@@ -63,7 +61,6 @@ int main(int argc, char *argv[])
     options.path=cmdl({ "-p", "--plugins"}, "").str();
     
     if(options.path==""){
-       if(Rank==0) std::cout << "IDENTIKEEP: Plugin path set to default." << std::endl;
        options.path=".";        
     }
     
@@ -106,18 +103,17 @@ int main(int argc, char *argv[])
             options.required.push_back(arg.substr(prefix.size()));
         }      
     }
-   
-  
-    // Execution starting time is stored
-    start_time =std::chrono::system_clock::now();
-   
+
+    options.Setup_filenames();
+    Setup_log(options);
+    
+    
 
     if(Rank==0) options.Print();
     
     bool found_all=CheckPlugins(options.path, options.required, Rank);
     if(!found_all){
-        if(Rank==0) std::cerr << "IDENTIKEEP: ERROR - Unable to find one or more required plugins. Aborting" << std::endl;
-        if(Rank==0) std::cerr << "IDENTIKEEP: HINT - Run with option -ls for a list of available plugins." << std::endl;
+        if(Rank==0) LOG_ERROR << "Unable to find one or more required plugins. Aborting" << std::endl;
         return 0;
     }
     

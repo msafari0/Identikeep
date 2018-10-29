@@ -20,7 +20,7 @@ extern char **environ;
 bool Env::Collect(int argc, char *argv[])
 {
     bool is_ok=true;
-    LOG_INFO << "Parsing " << this->Name() <<  " info...";
+    LOG_VERBOSE << "Parsing " << this->Name() <<  " info...";
     std::vector<std::string> env_list;
 
     

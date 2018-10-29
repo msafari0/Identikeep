@@ -19,7 +19,7 @@ bool CPU::Collect(int argc, char *argv[])
 {
     struct utsname sys_name;
     uname(&sys_name);
-    LOG_INFO << sys_name.sysname << sys_name.machine;
+    LOG_VERBOSE << sys_name.sysname << sys_name.machine;
     
     if (std::string(sys_name.sysname) != "Linux") {
         LOG_WARNING << "Linux CPU info plugin running on non linux system!";
@@ -39,7 +39,7 @@ bool CPU::Collect(int argc, char *argv[])
 bool CPU::collect_x86()
 {
     bool is_ok = true;
-    LOG_INFO << "Parsing " << this->Name() << " info...";
+    LOG_VERBOSE << "Parsing " << this->Name() << " info...";
       
     /* Open /proc/cpuinfo for reading. This should be perfectly fine on linux */
     std::ifstream ifs(CPU_INFO_FILE);
@@ -152,7 +152,7 @@ bool CPU::collect_x86()
 bool CPU::collect_ppc()
 {
     bool is_ok = true;
-    LOG_INFO << "Parsing " << this->Name() << " info...";
+    LOG_VERBOSE << "Parsing " << this->Name() << " info...";
       
     /* Open /proc/cpuinfo for reading. This should be perfectly fine on linux */
     std::ifstream ifs(CPU_INFO_FILE);

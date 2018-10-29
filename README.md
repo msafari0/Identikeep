@@ -142,12 +142,13 @@ In this case, the output `sysinfo.json` will have the following structure:
                 }
             }
         },
-        "Execution Time": 0.0                   *Execution time of the analysis (in seconds)
+        "Analysis execution time": 0.356                   *Execution time of the analysis (in seconds)
     }
     
 ### Log file
-Depending on the verbosity level provided as option, identikit produces log files. Logs are written by each MPI process, and their name is `sysinfo(_TAG).json.log-N` where `N` is the global rank of the process.
-            
+Depending on the verbosity level provided as option, identikit produces log files. 
+If the log level is not speified (i.e. with `--trace`), only some infos are written by the master node on a log file named `sysinfo(_TAG).json.log`.
+If a deeper level for log is required, each MPI process writes its own log file in `sysinfo(_TAG).json.log-N`, where `N` is the global rank of the process.
         
 
 ## Advanced use

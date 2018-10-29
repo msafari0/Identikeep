@@ -44,8 +44,6 @@ using namespace rapidjson;
 
 
 
-std::chrono::time_point<std::chrono::system_clock> start_time;
-std::chrono::time_point<std::chrono::system_clock> end_time;
 
 bool  CommByNode(MPI_Comm &NodeComm,
                 MPI_Comm &MasterComm,
@@ -54,7 +52,43 @@ bool  CommByNode(MPI_Comm &NodeComm,
                 std::string &NodeNameStr);
 
 
-PCollect_options::PCollect_options():path("."), comment(""), tag(""), log_level("") { identikit=true;};
+PCollect_options::PCollect_options():path("."), comment(""), tag(""), log_level(""), output_filename(""), log_filename("") { identikit=true;};
+
+void PCollect_options::Setup_filenames(){
+    
+        // Setup json filename
+    
+    output_filename="sysinfo";
+    if(tag!="") output_filename+="_"+tag;
+    output_filename+=".json";
+    
+    
+    // Setup log filename
+    int Rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
+    
+    if(Rank==MASTER) log_filename = output_filename+".log";
+    else log_filename = output_filename+".log-" + to_string(Rank);
+    
+}
+
+
+
+void Setup_log(PCollect_options &options){
+    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(options.log_filename.c_str(), 80000, 1); // Create the 1st appender.
+    plog::init(plog::warning, &fileAppender); // Initialize the logger with file appender.
+
+    /* set log level "trace", "debug", "info",  "warning", "error", "critical", "off"  */
+    if (options.log_level=="trace") plog::get()->setMaxSeverity(plog::verbose);
+    if (options.log_level=="debug") plog::get()->setMaxSeverity(plog::debug);
+    if (options.log_level=="verbose") plog::get()->setMaxSeverity(plog::info); 
+    if (options.log_level=="") plog::get()->setMaxSeverity(plog::info);
+    
+    
+    
+    
+}
+
 
 void PCollect_options::LoadEnv(){
     
@@ -65,25 +99,25 @@ void PCollect_options::LoadEnv(){
     size_t found=ld_preload.find_last_of("/\\");
     path=ld_preload.substr(0, found);
     
-    char* env_path=getenv("IDENTIKIT_PATH");
+    char* env_path=getenv("IDENTIKEEP_PATH");
     path=(env_path==NULL ? path : env_path);
     
-    char* env_comment=getenv("IDENTIKIT_COMMENT");
+    char* env_comment=getenv("IDENTIKEEP_COMMENT");
     comment=(env_comment==NULL ? "" : env_comment);
 
-    char* env_tag=getenv("IDENTIKIT_TAG");
+    char* env_tag=getenv("IDENTIKEEP_TAG");
     tag=(env_tag==NULL ? "" : env_tag);
     
-    char* env_log_level=getenv("IDENTIKIT_LOG");
+    char* env_log_level=getenv("IDENTIKEEP_LOG");
     log_level=(env_log_level==NULL ? "" : env_log_level);    
     
     std::string tempstring;
 
-    char* env_blacklist=getenv("IDENTIKIT_BLACKLIST");
+    char* env_blacklist=getenv("IDENTIKEEP_BLACKLIST");
     std::stringstream blacklist_stream(env_blacklist ==NULL ? "" : env_blacklist);
     while(blacklist_stream>>tempstring){blacklisted.push_back(tempstring);}
 
-    char* env_require=getenv("IDENTIKIT_REQUIRE");
+    char* env_require=getenv("IDENTIKEEP_REQUIRE");
     std::stringstream require_stream(env_require ==NULL ? "" : env_require);
     while(require_stream>>tempstring){required.push_back(tempstring);}
     
@@ -92,44 +126,33 @@ void PCollect_options::LoadEnv(){
 
 
 void PCollect_options::Print(){    
-    std::cout << "IDENTIKIT: OPTIONS" << std::endl;
-    std::cout << "\t" << std::left << std::setw(24) << "--> Plugins path: " << path << std::endl;
-    if(comment!="") std::cout << "\t" << std::left << std::setw(24) << "--> Comment: " << comment << std::endl;
-    if(tag!="")     std::cout << "\t" << std::left << std::setw(24) << "--> File tag: " << tag << std::endl;
-    if(log_level!="") std::cout << "\t" << std::left << std::setw(24) << "--> Log level: " << log_level << std::endl;    
+    LOG_INFO << "OPTIONS" ;
+    LOG_INFO << "--> Plugins path: " << path ;
+    if(comment!="") LOG_INFO << "--> Comment: " << comment ;
+    if(tag!="")     LOG_INFO << "--> File tag: " << tag ;
+    if(log_level!="") LOG_INFO << "--> Log level: " << log_level ;    
+    LOG_INFO << "--> Output filename: " << output_filename ;    
 
     
     if(required.size()>0){
-        std::cout << "\t" << std::left << std::setw(24) << "--> Required plugins: " << std::endl;    
+        LOG_INFO << "--> Required plugins: " ;    
         int index=1;
         for(std::vector<std::string>::iterator iter = required.begin(); iter != required.end(); ++iter){
-            std::cout << "\t" << std::left << std::setw(24) << "" << index <<") " << *iter << std::endl;
+            LOG_INFO << "" << index <<") " << *iter ;
             index++;        
         }
     }
     
     if(blacklisted.size()>0){
-        std::cout << "\t" << std::left << std::setw(24) << "--> Blacklisted plugins: " <<  std::endl;    
+        LOG_INFO << "--> Blacklisted plugins: ";    
 
         int index=1;
         for(std::vector<std::string>::iterator iter = blacklisted.begin(); iter != blacklisted.end(); ++iter){
-            std::cout << "\t" << std::left << std::setw(24) << "" << index <<") " << *iter << std::endl;
+            LOG_INFO <<  "" << index <<") " << *iter ;
             index++;        
         }
     }
 }
-
-
-void PrintHeader(){  
-    std::cout << "IDENTIKIT: Running main executable. " << std::endl;
-    std::cout << std::setfill ('-') << std::setw (64) << "" << std::endl<< std::setfill (' ') ;
-}
-
-void PrintFooter(){  
-    std::cout << std::setfill ('-') << std::setw (64) << "" << std::endl<< std::setfill (' ') ;
-    std::cout << "IDENTIKIT: Execution terminated. " << std::endl;
-}
-
 
 
 
@@ -138,17 +161,26 @@ void PrintFooter(){
 ////////////////////////////////////////////////////
 void PCollect(PCollect_options &options)
 {
-   
+    
+    
+    std::chrono::time_point<std::chrono::system_clock> start_time;
+    std::chrono::time_point<std::chrono::system_clock> end_time;
+    std::chrono::duration<double> diff_time; 
+
     int Rank=0;
     int Size=1;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
     MPI_Comm_size(MPI_COMM_WORLD, &Size);
+    
+    if(Rank==MASTER) start_time =std::chrono::system_clock::now();
+
    
-    if(Rank==MASTER) std::cout << "IDENTIKIT: Collecting information." << std::endl;
+
+   
+    if(Rank==MASTER) LOG_INFO << "Collection started." ;
     
     // variables to store options
-    std::string json_filename("");
 
 
    
@@ -161,12 +193,7 @@ void PCollect(PCollect_options &options)
     
     
     // The execution time of the executable is saved
-    std::chrono::duration<double> diff_time; 
-    if (Rank==MASTER){
-        end_time = std::chrono::system_clock::now();
-        std::chrono::duration<double>diff_time = (end_time - start_time);
-    }
-    
+
 
      // Variables for MPI
     MPI_Comm node_comm, master_comm;
@@ -175,46 +202,15 @@ void PCollect(PCollect_options &options)
    
     
     
-///////////////////////Setup file names    
+///////////////////////
     
-    // Setup json filename
-    
-    json_filename="sysinfo";
-    if(options.tag!="") json_filename+="_"+options.tag;
-//     json_filename+="_"+std::put_time(std::localtime(&start_time), "%F_%T")
-    json_filename+=".json";
-    
-    
-    // Setup log filename
-    std::string log_file = json_filename+".log-" + to_string(Rank) + ".txt";
-//     std::cout << log_file << std::endl;
-    
-    
-    //// Setup Plog file. In the current implementation only the master node will write the log.
-    static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(log_file.c_str(), 80000, 1); // Create the 1st appender.
-    plog::init(plog::warning, &fileAppender); // Initialize the logger with file appender.
-    
-    
-        
-    /* set log level "trace", "debug", "info",  "warning", "error", "critical", "off"  */
-    if (options.log_level=="trace") plog::get()->setMaxSeverity(plog::verbose);
-    if (options.log_level=="debug") plog::get()->setMaxSeverity(plog::debug);
-    if (options.log_level=="verbose") plog::get()->setMaxSeverity(plog::info);
-    if (options.log_level=="") plog::get()->setMaxSeverity(plog::warning);
-    
-    
-    if(Rank==MASTER)  std::cout << "IDENTIKIT: Analysis written to " << json_filename <<". Identikit log written to " << log_file<<  std::endl;  
-    
-    
-
-    
-    LOG_INFO << "Plugins path set to: "<< options.path;
+    if(Rank==MASTER)  LOG_INFO << "Plugins path set to: "<< options.path;
     
     
     if (DirExists(options.path.c_str())) {
-        LOG_VERBOSE << "Plugins path is valid.";
+        if(Rank==MASTER)  LOG_VERBOSE << "Plugins path is valid.";
     } else {
-        LOG_ERROR << "Plugins path is not valid! No plugins will be found!";
+        if(Rank==MASTER)  LOG_ERROR << "Plugins path is not valid! No plugins will be found!";
     }
     
 
@@ -222,7 +218,7 @@ void PCollect(PCollect_options &options)
 
     /* Split comunicator to have division between nodes. */
     CommByNode(node_comm, master_comm, node_rank, master_rank, node_size, master_size, NodeNameStr);
-    LOG_INFO << "Starting parallel collection!";
+    if(Rank==MASTER) LOG_INFO << "Starting parallel collection!";
     LOG_DEBUG << "Parallel info " << node_rank << " " << master_rank << " " << node_size << " " << master_size << " " << NodeNameStr;
     
     vector<Info*> inspectors;
@@ -262,6 +258,9 @@ void PCollect(PCollect_options &options)
         if(check_blacklisted) continue;    
         
 
+        if(Rank==MASTER)  LOG_INFO << "Running " << inspector.Name() << " plugin...";
+
+        
         LOG_VERBOSE << "Inspector " 
                 << inspector.Name() 
                 <<" will run once per node: " 
@@ -474,7 +473,6 @@ void PCollect(PCollect_options &options)
             NodeName_buf = (char *) malloc(length+1);
             MPI_Recv (NodeName_buf, length+1, MPI_CHAR, i, 1, master_comm, &status);
 
-            std::cout << NodeName_buf << std::endl;
             Document dn;
             dn.Parse(rec_buf);
             Value kk(NodeName_buf, allocator);
@@ -486,20 +484,23 @@ void PCollect(PCollect_options &options)
             free(NodeName_buf);
         }
 
-        // write prettified JSON to file
+        end_time = std::chrono::system_clock::now();
+        std::chrono::duration<double>diff_time = (end_time - start_time);
+    
+                // write prettified JSON to file
         Value ExecTime(kObjectType);
-        outDoc->AddMember("Execution Time",(diff_time).count() , procDoc.GetAllocator() );
-        
+        outDoc->AddMember("Analysis execution time",(diff_time).count() , procDoc.GetAllocator() );
         
         StringBuffer sb;
         PrettyWriter<rapidjson::StringBuffer> writer(sb);
         outDoc->Accept(writer);
-        
-
-        
-        std::ofstream o(json_filename.c_str());
+    
+        std::ofstream o(options.output_filename.c_str());
         o << std::setw(4) << sb.GetString() << std::endl;
         o.close();
+        LOG_INFO << "Output written to " << options.output_filename.c_str();
+        
+        
         
     } else if (node_rank == MASTER) {
         if (nodeDoc.ObjectEmpty()) {
@@ -524,10 +525,15 @@ void PCollect(PCollect_options &options)
     }
     
     
+    if (Rank==MASTER){           
+        LOG_INFO << "Analysis completed.";  
+    }
     
     
     
-    if(Rank==0)  std::cout << "IDENTIKIT: Analysis completed."<< std::endl;  
+    
+    
+    
 }
 
 
@@ -543,7 +549,7 @@ void ListPlugins(std::string plugin_path){
     std::cout << "Inspectors found in " << plugin_path << " :" << std::endl;
     
     for(vector<Info*>::iterator iter = inspectors.begin(); iter != inspectors.end(); ++iter) {
-//         std::cout.width(15);
+//         LOG_INFO.width(15);
         std::cout <<  "--> " << std::left << std::setw(15) << (*iter)->Name();
         std::cout <<  (*iter)->Description() <<  std::endl;
     }
@@ -563,7 +569,7 @@ bool CheckPlugins(std::string plugin_path, std::vector<std::string> required, in
         plugin_system.LoadInfoInstances(plugin_path, inspectors);
     
 
-        if(rank==MASTER) std::cout << "IDENTIKIT: Checking required inspectors in " << plugin_path << std::endl;
+        if(rank==MASTER) LOG_INFO << "Checking required inspectors in " << plugin_path ;
         bool found_all=1;
         for(std::vector<std::string>::iterator re_iter = required.begin(); re_iter != required.end(); ++re_iter){
             bool found=0;
@@ -574,7 +580,7 @@ bool CheckPlugins(std::string plugin_path, std::vector<std::string> required, in
             }
             if(!found){
                 found_all=0;
-                if(rank==MASTER) std::cerr << "IDENTIKIT: ERROR - Required plugin " << *re_iter << " not found." << std::endl; 
+                if(rank==MASTER) LOG_ERROR << "Required plugin " << *re_iter << " not found." ; 
             }
         }
     return found_all;
@@ -611,7 +617,8 @@ bool    CommByNode(MPI_Comm &NodeComm,
     MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
     MPI_Comm_size(MPI_COMM_WORLD, &Size);
 
-    LOG_INFO << "Preparing communicators...";
+    if(Rank==MASTER) LOG_INFO << "Preparing communicators...";
+    else LOG_VERBOSE << "Preparing communicators...";
     /*
      * ======================================================================
      * What follows is my best attempt at creating a communicator
@@ -682,7 +689,6 @@ bool    CommByNode(MPI_Comm &NodeComm,
             ss >> FullStrList[i];   //  stringstream into string for each node name
             ss.str(""); //  This and below clear the contents of the stringstream,
             ss.clear(); //  since the >> operator doesn't clear as it extracts
-            //cout << FullStrList[i] << endl;   //  for testing
         }
         delete NodeNameList;    //  master is done with full c-array
         bool IsUnique;  //  flag for breaking from for loop

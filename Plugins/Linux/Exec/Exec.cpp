@@ -75,7 +75,7 @@ std::string getCreationDate(std::string filename){
 bool Exec::Collect(int argc, char *argv[])
 {
     bool is_ok=true;
-    LOG_INFO << "Parsing " << this->Name() <<  " info...";
+    LOG_VERBOSE << "Parsing " << this->Name() <<  " info...";
   
     std::string proc_pid=std::to_string(getpid());
     std::string filename="/proc/"+proc_pid+"/exe";

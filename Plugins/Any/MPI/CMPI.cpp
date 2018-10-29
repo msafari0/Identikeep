@@ -12,7 +12,7 @@ bool CMPI::Collect(int argc, char *argv[])
     bool is_ok = true;
     int version, subversion;
 
-    LOG_INFO << "Parsing " << this->Name() << " info...";
+    LOG_VERBOSE << "Parsing " << this->Name() << " info...";
     
     int mpiflag;
     MPI_Initialized(&mpiflag);
