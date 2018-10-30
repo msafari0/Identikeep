@@ -181,15 +181,12 @@ void PCollect(PCollect_options &options)
     if(Rank==MASTER) LOG_INFO << "Collection started." ;
     
     // variables to store options
-
-
-   
     
-    // If PCollect is called from the identikit exe, plugins concerning the libraries loaded at runtime (Libs) and the info about the executable (Exec) are disabled.
-    if(options.identikit){
-        options.blacklisted.push_back("Libs");
-        options.blacklisted.push_back("Exec");       
-    }
+    // If PCollect is called from the identikit exe, plugins concerning the libraries loaded at runtime (Libs) and the info about the executable (Exec) are disabled. 
+//     if(options.identikit){
+//         options.blacklisted.push_back("Libs");
+//         options.blacklisted.push_back("Exec");       
+//     }
     
     
     // The execution time of the executable is saved

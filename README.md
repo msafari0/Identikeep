@@ -151,6 +151,130 @@ If the log level is not speified (i.e. with `--trace`), only some infos are writ
 If a deeper level for log is required, each MPI process writes its own log file in `sysinfo(_TAG).json.log-N`, where `N` is the global rank of the process.
         
 
+## List of available plugins
+Identikeep comes with some plugins, whose role is to inspect different features of the cluster.
+Here is a list of them.
+
+###### CPU
+
+- **Name:** CPU
+- **Library name:** libInfoCPU
+
+The CPU plugin provides information on the CPU hardware. In particular, the following fields are created in the output file:
+
+- **cpuModel:**     Model of the installed CPUs (list)
+- **cpuMhz:**       Detected CPUs frequency (list)
+- **cpuCache1:**    CPU L1 cache size
+- **cpuCache2:**    CPU L2 cache size
+- **cpuCache3:**    CPU L3 cache size
+
+The plugin runs only once per computing node.
+**The plugin runs only once per computing node.**
+
+
+###### CMPI
+
+- **Name:** CMPI
+- **Library name:** libInfoMPI
+
+The CMPI plugin provides information about the Message Passing Interface library installed on the system. The following fields are created in the output file:
+
+- **mpiVersion:**     MPI version
+- **mpiSubversion:**  MPI subversion
+
+**The plugin runs only once per computing node.**
+
+
+###### Env
+
+- **Name:** Env
+- **Library name:** libInfoEnv
+
+The Env plugin provides information about the environment variables defined on the system. The following fields are created in the output file:
+
+- **envVariables:**   List of environment variables and their value
+
+**The plugin runs only once per computing node.**
+
+
+###### MEM
+
+- **Name:** MEM
+- **Library name:** libInfoMEM
+
+The MEM plugin provides information about the system memory. The following fields are created in the output file:
+
+- **memTotal:**   Amount of installed memory
+
+**The plugin runs only once per computing node.**
+
+###### OMP
+
+- **Name:** OMP
+- **Library name:** libInfoOMP
+
+The OMP plugin provides information about the OpenMP library installed on the system. The following fields are created in the output file:
+
+- **openmpVersion:**            Version of the installed OpenMP library (yyyymm)
+- **openmpNumThreads:**         return value of omp_get_num_threads function
+- **openmpMaxThreads:**         return value of omp_get_max_threads function
+- **openmpThreadLimit:**        return value of omp_get_thread_limit function
+- **openmpNumProcs:**          return value of omp_get_num_procs() function
+- **openmpNested:**            return value of omp_get_nested() ) function
+- **openmpMaxActiveLevels:**   return value of omp_get_max_active_levels() ) function
+
+
+###### OS
+
+- **Name:** OS
+- **Library name:** libInfoOS
+
+The OS plugin provides information about the Operative System installed on the node. The following fields are created in the output file:
+
+- **osVersion:**    Version on the installed OS
+
+**The plugin runs only once per computing node.**
+
+
+###### Libs
+
+- **Name:** Libs
+- **Library name:** libInfoLibs
+
+The Libs plugin provides information about the shared libraries loaded by the executable at runtime. The following fields are created in the output file:
+
+- **libsLoaded:**    List of the loaded libraries
+
+**The plugin runs only once per computing node.**
+
+
+###### Exec
+
+- **Name:** Exec
+- **Library name:** libInfoExec
+
+The Exec plugin provides information about the executable. The following fields are created in the output file:
+
+- **execPath:**         Absolute path to the executable
+- **execSize:**         Size of the executable
+- **execLastModified**  Date of the executable last modification (or creation)
+
+**The plugin runs only once per computing node.**
+
+###### MPIBench
+
+- **Name:** MPIBench
+- **Library name:** libMPIBench
+
+The MPIBench plugin is actually a very tiny and non-intrusive benchmark, which provides some info about the quality of MPI communications.
+In order to keep the execution time low, only communications to and from the master node are considered. For this reason, **only the master node will provide the information**, even if the plugin is executed by each MPI process:
+The following fields are created in the output file:
+
+- **mpibenchPingPong:**             Ping pong time between the master node and the other computing nodes. Standard deviation (in percentage) is provided too.
+- **mpibenchBandwidthPingPong:**    Ping pong bandwidth between the master node and the other computing nodes. Standard deviation (in percentage) is provided too.
+- **mpibenchBandwidthBcast**        MPI Broadcast bandwidth, achieved when bradcasting from the master node
+
+
 ## Advanced use
 Identikeep provides a tool to intercept the MPI calls of an executable via the PMPI interface. If we need to run Identikeep to have a snapshot of the system configuration when a program `MyProg` is launched, there are two different ways.
 

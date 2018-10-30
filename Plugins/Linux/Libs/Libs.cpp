@@ -45,7 +45,7 @@ bool Libs::Collect(int argc, char *argv[])
     std::string libs_info, filename;
     
     filename="/proc/"+proc_pid+"/maps";
-    LOG_INFO << "Reading file " << filename ;
+    LOG_VERBOSE << "Reading file " << filename ;
     
     std::ifstream file;
     
