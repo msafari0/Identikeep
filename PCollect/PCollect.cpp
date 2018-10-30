@@ -411,9 +411,11 @@ void PCollect(PCollect_options &options)
             std::string s = sb.GetString();
             LOG_DEBUG << "Json dump of Rank " << Rank << ": " << s;
             int len = s.length();
+            char* schar=new char[len];
+            strcpy(schar, s.c_str() );
             MPI_Send(&len, 1, MPI_INT, MASTER, 1,node_comm);
-            MPI_Send(s.c_str(), s.length() + 1 , MPI_CHAR, MASTER, 1, node_comm);
-            
+            MPI_Send(schar, s.length() , MPI_CHAR, MASTER, 1, node_comm);
+            delete [] schar;
             MPI_Send(&Rank, 1 , MPI_INT, MASTER, 1, node_comm);
             
         }
@@ -512,12 +514,18 @@ void PCollect(PCollect_options &options)
             std::string s = sb.GetString();
             LOG_DEBUG << "Json dump of Node " << master_rank << ": " << s;
             int len = s.length();
+            char* schar=new char[len];
+            strcpy(schar, s.c_str() );
             MPI_Send(&len, 1, MPI_INT, MASTER, 1, master_comm);
-            MPI_Send(s.c_str(), s.length() + 1 , MPI_CHAR, MASTER, 1, master_comm);
+            MPI_Send(s.c_str(), len , MPI_CHAR, MASTER, 1, master_comm);
+            delete [] schar;
             
             len=NodeNameStr.length();
+            schar=new char[len];
+            strcpy(schar, NodeNameStr.c_str() );
             MPI_Send(&len, 1, MPI_INT, MASTER, 1, master_comm);
-            MPI_Send(NodeNameStr.c_str(), NodeNameStr.length() + 1 , MPI_CHAR, MASTER, 1, master_comm);
+            MPI_Send(schar, len , MPI_CHAR, MASTER, 1, master_comm);
+            delete [] schar;
         }
     }
     

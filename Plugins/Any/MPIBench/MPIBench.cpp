@@ -133,7 +133,7 @@ bool MPIBench::Collect(int argc, char *argv[])
             MPI_Bcast( test_array, SIZE, MPI_CHAR, i_master, MasterComm );
             MPI_Barrier(MasterComm);
             end = MPI_Wtime();
-            diff=double(array_size)/(end - start)*2./1000000.;
+            diff=double(array_size)/((end - start)*1000000.);
             bcast_s+=diff;
             bcast_ss+=diff*diff;            
             
