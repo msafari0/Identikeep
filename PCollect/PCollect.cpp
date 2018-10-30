@@ -517,7 +517,7 @@ void PCollect(PCollect_options &options)
             char* schar=new char[len];
             strcpy(schar, s.c_str() );
             MPI_Send(&len, 1, MPI_INT, MASTER, 1, master_comm);
-            MPI_Send(s.c_str(), len , MPI_CHAR, MASTER, 1, master_comm);
+            MPI_Send(schar, len , MPI_CHAR, MASTER, 1, master_comm);
             delete [] schar;
             
             len=NodeNameStr.length();
