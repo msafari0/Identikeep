@@ -57,7 +57,8 @@ If successuful, this procedure will create a directory `bin`, inside the `build`
     ./prepare.sh    
     mkdir -p build && cd build
     
-    cmake -DDESC=intel_intelmpi_mkl -DCMAKE_CXX_COMPILER=CC -DCMAKE_CXX_FLAGS="-shared -dynamic" ..
+    export CRAYPE_LINK_TYPE=dynamic
+    cmake -DDESC=intel_intelmpi_mkl -DCMAKE_CXX_COMPILER=CC ..
     make
 
 ### Piz Daint with PrgEnv-gnu
@@ -66,4 +67,5 @@ If successuful, this procedure will create a directory `bin`, inside the `build`
     ./prepare.sh    
     mkdir -p build && cd build
     
-    cmake -DDESC=intel_intelmpi_mkl -DCMAKE_CXX_COMPILER=CC -DCMAKE_CXX_FLAGS="-shared -dynamic" ..
+    export CRAYPE_LINK_TYPE=dynamic
+    cmake -DDESC=intel_intelmpi_mkl -DCMAKE_CXX_COMPILER=CC ..
