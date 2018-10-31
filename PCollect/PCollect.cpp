@@ -395,7 +395,6 @@ void PCollect(PCollect_options &options)
             MPI_Recv(rec_buf, length+1, MPI_CHAR, i, 1, node_comm, &status);
             int temp_rank=0;
             MPI_Recv (&temp_rank, 1, MPI_INT, i, 1, node_comm, &status);
-            std::cout << rec_buf << std::endl;
 
             Document dn;
             dn.Parse(rec_buf);
