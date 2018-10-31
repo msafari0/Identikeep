@@ -89,9 +89,7 @@ bool MPIBench::Collect(int argc, char *argv[])
     double start,end, diff;
     
     for(int itries=0; itries<NTRIES; itries++){
-//         for(int i_master=0; i_master<Size; i_master++){
-            int i_master=MASTER;
-            if(Rank==i_master){
+            if(Rank==MASTER){
             for(int i_recv=0; i_recv<Size; i_recv++){
                 if(i_recv!=Rank){
                     //ping pong 
@@ -116,11 +114,11 @@ bool MPIBench::Collect(int argc, char *argv[])
             }
             }
             else{
-                MPI_Recv(&test_data, 1, MPI_CHAR, i_master, 0, MasterComm, MPI_STATUS_IGNORE);
-                MPI_Send(&test_data, 1, MPI_CHAR, i_master, 0, MasterComm);
+                MPI_Recv(&test_data, 1, MPI_CHAR, MASTER, 0, MasterComm, MPI_STATUS_IGNORE);
+                MPI_Send(&test_data, 1, MPI_CHAR, MASTER, 0, MasterComm);
 
-                MPI_Recv(test_array, SIZE, MPI_CHAR, i_master, 0, MasterComm, MPI_STATUS_IGNORE);
-                MPI_Send(test_array, SIZE, MPI_CHAR, i_master, 0, MasterComm);
+                MPI_Recv(test_array, SIZE, MPI_CHAR, MASTER, 0, MasterComm, MPI_STATUS_IGNORE);
+                MPI_Send(test_array, SIZE, MPI_CHAR, MASTER, 0, MasterComm);
                 }
                 
                 //bcast
@@ -130,49 +128,25 @@ bool MPIBench::Collect(int argc, char *argv[])
             //bcast
             MPI_Barrier(MasterComm);
             start = MPI_Wtime();
-            MPI_Bcast( test_array, SIZE, MPI_CHAR, i_master, MasterComm );
+            MPI_Bcast( test_array, SIZE, MPI_CHAR, MASTER, MasterComm );
             MPI_Barrier(MasterComm);
             end = MPI_Wtime();
             diff=double(array_size)/((end - start)*1000000.);
             bcast_s+=diff;
             bcast_ss+=diff*diff;            
-            
 
-    //         MPI_Barrier(MPI_COMM_WORLD);
-//         }
     }
     
     
+    MPI_Bcast(ping_time_s, Size, MPI_DOUBLE, 0, MasterComm);
+    MPI_Bcast(ping_time_ss, Size, MPI_DOUBLE, 0, MasterComm);
+    MPI_Bcast(bandwidth_s, Size, MPI_DOUBLE, 0, MasterComm);
+    MPI_Bcast(bandwidth_ss, Size, MPI_DOUBLE, 0, MasterComm);
+
+    
+    
     if(Rank==MASTER){
-        std::vector<std::string> pingpong_values;
-        std::vector<std::string> bandwidth_values;
-        
-        
-        for(int inode=0; inode<Size; inode++)if(Rank!=inode){
-            double ping_time=0;
-            double ping_time_dev=0;
-            ping_time=ping_time_s[inode]/double(NTRIES);
-            ping_time_dev=sqrt(ping_time_ss[inode]/double(NTRIES) - ping_time*ping_time);
-            int ping_time_perc = int( ping_time_dev / ping_time * 100. + 0.5);
-            
-            std::string value=std::string(Names[inode])+": "+ std::to_string(ping_time) + "ms " + "(+/- " + std::to_string(ping_time_perc) + "%)" ;
-            pingpong_values.push_back(value);
-            
-        }
-        
-        
-        for(int inode=0; inode<Size; inode++)if(Rank!=inode){
-            double bandwidth=0;
-            double bandwidth_dev=0;
-            bandwidth=bandwidth_s[inode]/double(NTRIES);
-            bandwidth_dev=sqrt(bandwidth_ss[inode]/double(NTRIES) - bandwidth*bandwidth);
-            int bandwidth_perc = int( bandwidth_dev / bandwidth * 100. + 0.5);
-            
-            std::string value=std::string(Names[inode])+": "+ std::to_string(bandwidth) + "MB/s " + "(+/- " + std::to_string(bandwidth_perc) + "%)" ;
-            bandwidth_values.push_back(value);
-            
-        }
-        
+       
         ////bcast
         
         double bcast=0;
@@ -180,82 +154,42 @@ bool MPIBench::Collect(int argc, char *argv[])
         bcast=bcast_s/double(NTRIES);
         bcast_dev=sqrt(bcast_ss/double(NTRIES) - bcast*bcast);
         int bcast_perc = int( bcast_dev / bcast * 100. + 0.5);
-
-        std::string bcast_value=std::to_string(bcast) + "MB/s " + "(+/- " + std::to_string(bcast_perc) + "%)" ;
-        
-        
-        delete [] ping_time_s;
-        delete [] ping_time_ss;
-        delete [] bandwidth_s;
-        delete [] bandwidth_ss;
-        
-        std::string title="mpibenchPingPong";
-        Item<std::string> i = Item<std::string>(title, MATCHALL, pingpong_values);
-        m_items.strings.push_back(i);
-
-        title="mpibenchBandwidthPingPong - Pack size: " +std::to_string(array_size/1000000.) + "MB";
-        i = Item<std::string>(title, MATCHALL, bandwidth_values);
-        m_items.strings.push_back(i);
-        
-        title="mpibenchBandwidthBcast - Pack size: " +std::to_string(array_size/1000000.) + "MB";
-        i = Item<std::string>(title, MATCHALL, bcast_value);
-        m_items.strings.push_back(i);
+      
+        std::string title="mpibenchBandwidthBcast - Pack size: " +std::to_string(array_size/1000000.) + "MB";
+        Item<float> i = Item<float>(title, "MB", MATCHALL, bcast);
+        m_items.floats.push_back(i);
     }
     else{
-        std::string title="mpibenchPingPong";
-        Item<std::string> i = Item<std::string>(title, MATCHALL, "Info stored by master");
-        m_items.strings.push_back(i);
 
-        title="mpibenchBandwidthPingPong - Pack size: " +std::to_string(array_size/1000000.) + "MB";
-        i = Item<std::string>(title, MATCHALL, "Info stored by master");
-        m_items.strings.push_back(i);
+        double ping_time=0;
+        double ping_time_dev=0;
+        ping_time=ping_time_s[Rank]/double(NTRIES);
+        ping_time_dev=sqrt(ping_time_ss[Rank]/double(NTRIES) - ping_time*ping_time);
+        int ping_time_perc = int( ping_time_dev / ping_time * 100. + 0.5);
+
+
+        double bandwidth=0;
+        double bandwidth_dev=0;
+        bandwidth=bandwidth_s[Rank]/double(NTRIES);
+        bandwidth_dev=sqrt(bandwidth_ss[Rank]/double(NTRIES) - bandwidth*bandwidth);
+        int bandwidth_perc = int( bandwidth_dev / bandwidth * 100. + 0.5);
+            
         
-        title="mpibenchBandwidthBcast - Pack size: " +std::to_string(array_size/1000000.) + "MB";
-        i = Item<std::string>(title, MATCHALL, "Info stored by master");
-        m_items.strings.push_back(i);
-        
+        std::string title="mpibenchPingPong";
+        Item<float> i = Item<float>(title, "ms", MATCHALL, ping_time );
+        m_items.floats.push_back(i);
+
+        title="mpibenchPingPongBandwidth - Pack size: " +std::to_string(array_size/1000000.) + "MB";
+        i = Item<float>(title, "MB/s", MATCHALL, bandwidth);
+        m_items.floats.push_back(i); 
         
     }
     
     
-    ////////////////////////////////////////////////////////////
-        
-/*    
-    double* test_array=new double[SIZE];
-    
-    int array_size=SIZE*sizeof(double);
-    double bandwidth=0;
-    
-    
-    for(int i_master=0; i_master<Size; i_master++){
-        if(Rank==i_master){
-           for(int i_recv=0; i_recv<Size; i_recv++){
-               if(i_recv!=Rank){
-                   double start = MPI_Wtime();
-                   MPI_Send(test_array, SIZE, MPI_DOUBLE, i_recv, 0, MasterComm);
-                   MPI_Recv(test_array, SIZE, MPI_DOUBLE, i_recv, 0, MasterComm, MPI_STATUS_IGNORE);
-                   double end = MPI_Wtime();
-                   bandwidth+=double(array_size)/(end - start)*2.;
-//                     std::cout << "The process took " << end - start << " seconds to run." << std::endl;
-                   
-            }
-           }
-        }
-        else{
-             MPI_Recv(test_array, SIZE, MPI_DOUBLE, i_master, 0, MasterComm, MPI_STATUS_IGNORE);
-             MPI_Send(test_array, SIZE, MPI_DOUBLE, i_master, 0, MasterComm);
-        }
-//         MPI_Barrier(MPI_COMM_WORLD);
-    }
-    
-    
-    bandwidth/=double(Size-1)*1000000.;
-    std::cout << bandwidth << std::endl;
-    Item<float> ib = Item<float>("Average Bandwidth", "MB/s",  MATCHALL, bandwidth);
-    m_items.floats.push_back(ib);
-    
-    delete [] test_array;*/
-    
+    delete [] ping_time_s;
+    delete [] ping_time_ss;
+    delete [] bandwidth_s;
+    delete [] bandwidth_ss;
     
     }
 

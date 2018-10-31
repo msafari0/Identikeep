@@ -234,16 +234,19 @@ void PCollect(PCollect_options &options)
     Document procDoc;
     procDoc.SetObject();
     
-    
-    
+
+    Document::AllocatorType& allocator = procDoc.GetAllocator();
+    Value krank("GlobalRank", allocator);
+    Value vrank(Rank);
+    procDoc.AddMember(krank, vrank, allocator);   
     
     
     
     for(vector<Info*>::iterator iter = inspectors.begin(); iter != inspectors.end(); ++iter) {
         
-        Document::AllocatorType& allocator = procDoc.GetAllocator();
         Info& inspector = *(*iter);
         
+
         
         bool check_blacklisted=false;
         for(vector<string>::iterator b_iter = options.blacklisted.begin(); b_iter != options.blacklisted.end(); ++b_iter){
@@ -346,8 +349,10 @@ void PCollect(PCollect_options &options)
           inspObj.AddMember(k, fieldObj , allocator);
         }
         // add all entries for this inspector
-        Value k(inspector.Name().c_str(), allocator);
-        procDoc.AddMember(k, inspObj, allocator);
+        if(!inspObj.ObjectEmpty()){
+            Value k(inspector.Name().c_str(), allocator);
+            procDoc.AddMember(k, inspObj, allocator);
+        }
     }
     
     
@@ -369,11 +374,15 @@ void PCollect(PCollect_options &options)
     nodeDoc.SetObject(); // define the document as an object (instead of array)
 
     if (node_rank == MASTER) {
-        Document::AllocatorType& allocator = nodeDoc.GetAllocator();
-        std::string rankstr=to_string(node_rank) +" (" + to_string(Rank) + ")";
-        Value k(rankstr.c_str(), allocator);
-        nodeDoc.AddMember(k, procDoc.GetObject(), allocator);
+        Document::AllocatorType& allocator = nodeDoc.GetAllocator();    
         
+        Value vname(NodeNameStr.c_str(), allocator);
+        nodeDoc.AddMember("NodeName", vname, allocator);
+        
+
+        Value procs(kArrayType);        
+        procs.PushBack(procDoc.GetObject(), allocator);
+
         int length;
         MPI_Status status;
         
@@ -384,21 +393,22 @@ void PCollect(PCollect_options &options)
             char* rec_buf;
             rec_buf = (char *) malloc(length+1);
             MPI_Recv(rec_buf, length+1, MPI_CHAR, i, 1, node_comm, &status);
-            
             int temp_rank=0;
             MPI_Recv (&temp_rank, 1, MPI_INT, i, 1, node_comm, &status);
-            
+            std::cout << rec_buf << std::endl;
+
             Document dn;
             dn.Parse(rec_buf);
             
-            rankstr=to_string(i) +" (" + to_string(temp_rank) + ")";
-            Value kk(rankstr.c_str(), allocator);
             Value vv(kObjectType);
             vv.CopyFrom(dn, allocator);
-            nodeDoc.AddMember(kk, vv, allocator);
+            procs.PushBack(vv, allocator);
             free(rec_buf);
             
         }
+        nodeDoc.AddMember("ProcList", procs, allocator);
+
+        
     } else {
         if (procDoc.ObjectEmpty()) {
             int len=0;
@@ -411,10 +421,11 @@ void PCollect(PCollect_options &options)
             std::string s = sb.GetString();
             LOG_DEBUG << "Json dump of Rank " << Rank << ": " << s;
             int len = s.length();
-            char* schar=new char[len];
+            char* schar=new char[len+1];
             strcpy(schar, s.c_str() );
             MPI_Send(&len, 1, MPI_INT, MASTER, 1,node_comm);
-            MPI_Send(schar, s.length() , MPI_CHAR, MASTER, 1, node_comm);
+            MPI_Send(schar, s.length()+1 , MPI_CHAR, MASTER, 1, node_comm);
+
             delete [] schar;
             MPI_Send(&Rank, 1 , MPI_INT, MASTER, 1, node_comm);
             
@@ -452,9 +463,10 @@ void PCollect(PCollect_options &options)
         
                 
         // Add object for this node to the final output json file
-        Value k(NodeNameStr.c_str(), allocator);
-        outDoc->AddMember(k, nodeDoc.GetObject(), allocator);
-
+        
+        Value nodes(kArrayType);        
+        nodes.PushBack(nodeDoc.GetObject(), allocator);
+        
         int length;
         MPI_Status status;
         for (int i=1; i < master_size; i++) {
@@ -477,18 +489,22 @@ void PCollect(PCollect_options &options)
             Value kk(NodeName_buf, allocator);
             Value vv(kObjectType);
             vv.CopyFrom(dn, allocator);
-            outDoc->AddMember(kk, vv, allocator);
+
+            nodes.PushBack(vv, allocator);
 
             free(rec_buf);
             free(NodeName_buf);
         }
+        
+        outDoc->AddMember("NodeList",nodes , procDoc.GetAllocator() );
+
 
         end_time = std::chrono::system_clock::now();
         std::chrono::duration<double>diff_time = (end_time - start_time);
     
                 // write prettified JSON to file
         Value ExecTime(kObjectType);
-        outDoc->AddMember("Analysis execution time",(diff_time).count() , procDoc.GetAllocator() );
+        outDoc->AddMember("ExecTime",(diff_time).count() , procDoc.GetAllocator() );
         
         StringBuffer sb;
         PrettyWriter<rapidjson::StringBuffer> writer(sb);
@@ -514,17 +530,17 @@ void PCollect(PCollect_options &options)
             std::string s = sb.GetString();
             LOG_DEBUG << "Json dump of Node " << master_rank << ": " << s;
             int len = s.length();
-            char* schar=new char[len];
+            char* schar=new char[len+1];
             strcpy(schar, s.c_str() );
             MPI_Send(&len, 1, MPI_INT, MASTER, 1, master_comm);
-            MPI_Send(schar, len , MPI_CHAR, MASTER, 1, master_comm);
+            MPI_Send(schar, len+1 , MPI_CHAR, MASTER, 1, master_comm);
             delete [] schar;
             
             len=NodeNameStr.length();
-            schar=new char[len];
+            schar=new char[len+1];
             strcpy(schar, NodeNameStr.c_str() );
             MPI_Send(&len, 1, MPI_INT, MASTER, 1, master_comm);
-            MPI_Send(schar, len , MPI_CHAR, MASTER, 1, master_comm);
+            MPI_Send(schar, len +1, MPI_CHAR, MASTER, 1, master_comm);
             delete [] schar;
         }
     }
