@@ -156,7 +156,7 @@ bool MPIBench::Collect(int argc, char *argv[])
         int bcast_perc = int( bcast_dev / bcast * 100. + 0.5);
       
         std::string title="mpibenchBandwidthBcast - Pack size: " +std::to_string(array_size/1000000.) + "MB";
-        Item<float> i = Item<float>(title, "MB", MATCHALL, bcast);
+        Item<float> i = Item<float>(title, "MB/s", MATCHALL, bcast);
         m_items.floats.push_back(i);
     }
     else{
