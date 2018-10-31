@@ -97,28 +97,28 @@ In this case, the output `sysinfo.json` will have the following structure:
                             ...                 *Results of Plugin1 computed by the master process
                         },
                         "Plugin2": {
-                    ...                         *Results of Plugin2 computed by the master process
+                            ...                 *Results of Plugin2 computed by the master process
                         },
                         "Plugin3": {
-                    ...                         *Results of Plugin3 computed by the master process
+                            ...                 *Results of Plugin3 computed by the master process
                         }
                     },
                     {
                         "GlobalRank": 1,        *Global rank of the MPI process
                         "Plugin2": {
-                    ...                         *Results of Plugin2 computed by process 1. (Plugin1 and Plugin3 run one per node, and are executed only by the master of the node) 
+                            ...                 *Results of Plugin2 computed by process 1. (Plugin1 and Plugin3 run one per node, and are executed only by the master of the node) 
                         }
                     },        
                     {
                         "GlobalRank": 2, 
                         "Plugin2": {                    
-                    ...                         *Results of Plugin2 computed by process 2.
+                            ...                 *Results of Plugin2 computed by process 2.
                         }
                     },  
                     {
                         "GlobalRank": 3, 
                         "Plugin2": {
-                    ...                         *Results of Plugin2 computed by process 3.
+                            ...                 *Results of Plugin2 computed by process 3.
                         }
                     }
                 ]
@@ -132,28 +132,28 @@ In this case, the output `sysinfo.json` will have the following structure:
                             ...                 *Results of Plugin1 computed by process 4 (master of the node NODE_2_NAME)
                         },
                         "Plugin2": {
-                    ...                         *Results of Plugin2 computed by process 4 (master of the node NODE_2_NAME)
+                            ...                 *Results of Plugin2 computed by process 4 (master of the node NODE_2_NAME)
                         },
                         "Plugin3": {
-                    ...                         *Results of Plugin3 computed by process 4 (master of the node NODE_2_NAME)
+                            ...                 *Results of Plugin3 computed by process 4 (master of the node NODE_2_NAME)
                         }
                     },
                     {
                         "GlobalRank": 5,        *Global rank of the MPI process
                         "Plugin2": {
-                    ...                         *Results of Plugin2 computed by process 5. 
+                            ...                 *Results of Plugin2 computed by process 5. 
                         }
                     },        
                     {
                         "GlobalRank": 6,        *Global rank of the MPI process
                         "Plugin2": {                    
-                    ...                         *Results of Plugin2 computed by process 6.
+                            ...                 *Results of Plugin2 computed by process 6.
                         }
                     },  
                     {
                         "GlobalRank": 7,        *Global rank of the MPI process
                         "Plugin2": {
-                    ...                         *Results of Plugin2 computed by process 7.
+                            ...                 *Results of Plugin2 computed by process 7.
                         }
                     }
                 ]
