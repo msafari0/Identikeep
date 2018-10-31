@@ -87,62 +87,79 @@ In this case, the output `sysinfo.json` will have the following structure:
     {
         "Comment": "MyComment",                 *File comment
         "DateTime": "yyyy-mm-dd hh:mm:ss",      *Time at which identikeep was executed
-        "NODE_1_NAME": {                        *Name of the first computing node
-            "0 (0)": {                          *Rank of the MPI process on the node, while, in brakets, global rank of the process
-                "Plugin1": {                   
-                    ...                         *Results of Plugin1 computed by the master of the node
-                },
-                "Plugin2": {
-                    ...                         *Results of Plugin2 computed by the master of the node
-                },
-                "Plugin3": {
-                    ...                         *Results of Plugin3 computed by the master of the node
-                }
+        "NodeList": [                           *List of physical nodes
+            {
+                "NodeName": "NODE_1_NAME",      *Name of the physical node
+                "ProcList": [                   *List of processes on the node
+                    {
+                        "GlobalRank": 0,        *Global rank of the MPI process
+                        "Plugin1": {             
+                            ...                 *Results of Plugin1 computed by the master process
+                        },
+                        "Plugin2": {
+                    ...                         *Results of Plugin2 computed by the master process
+                        },
+                        "Plugin3": {
+                    ...                         *Results of Plugin3 computed by the master process
+                        }
+                    },
+                    {
+                        "GlobalRank": 1,        *Global rank of the MPI process
+                        "Plugin2": {
+                    ...                         *Results of Plugin2 computed by process 1. (Plugin1 and Plugin3 run one per node, and are executed only by the master of the node) 
+                        }
+                    },        
+                    {
+                        "GlobalRank": 2, 
+                        "Plugin2": {                    
+                    ...                         *Results of Plugin2 computed by process 2.
+                        }
+                    },  
+                    {
+                        "GlobalRank": 3, 
+                        "Plugin2": {
+                    ...                         *Results of Plugin2 computed by process 3.
+                        }
+                    }
+                ]
             },
-            "1 (1)": {
-                "Plugin2": {
-                    ...                         *Results of Plugin2 computed by process 1 (1). (Plugin1 and Plugin3 run one per node, and are executed only by the master of the node) 
-                }
-            },        
-            "2 (2)": {
-                "Plugin2": {                    
-                    ...                         *Results of Plugin2 computed by process 2 (2).
-                }
-            },  
-            "3 (3)": {
-                "Plugin2": {
-                    ...                         *Results of Plugin2 computed by process 3 (3).
-                }
-            }
-        "NODE_2_NAME": {                        *The same is performed for the second computing node, where the master inside the node is the only one to execute Plugin1 and Plugin3
-            "0 (4)": {
-                "Plugin1": {
-                    ...
-                },
-                "Plugin2": {
-                    ...
-                },
-                "Plugin3": {
-                    ...
-                }
+            {
+                "NodeName": "NODE_2_NAME",      *Name of the physical node
+                "ProcList": [                   *List of processes on the node
+                    {
+                        "GlobalRank": 4,        *Global rank of the MPI process
+                        "Plugin1": {             
+                            ...                 *Results of Plugin1 computed by process 4 (master of the node NODE_2_NAME)
+                        },
+                        "Plugin2": {
+                    ...                         *Results of Plugin2 computed by process 4 (master of the node NODE_2_NAME)
+                        },
+                        "Plugin3": {
+                    ...                         *Results of Plugin3 computed by process 4 (master of the node NODE_2_NAME)
+                        }
+                    },
+                    {
+                        "GlobalRank": 5,        *Global rank of the MPI process
+                        "Plugin2": {
+                    ...                         *Results of Plugin2 computed by process 5. 
+                        }
+                    },        
+                    {
+                        "GlobalRank": 6,        *Global rank of the MPI process
+                        "Plugin2": {                    
+                    ...                         *Results of Plugin2 computed by process 6.
+                        }
+                    },  
+                    {
+                        "GlobalRank": 7,        *Global rank of the MPI process
+                        "Plugin2": {
+                    ...                         *Results of Plugin2 computed by process 7.
+                        }
+                    }
+                ]
             },
-            "1 (5)": {
-                "Plugin2": {
-                    ...
-                }
-            },        
-            "2 (6)": {
-                "Plugin2": {
-                    ...
-                }
-            },  
-            "2 (7)": {
-                "Plugin2": {
-                    ...
-                }
-            }
-        },
-        "Analysis execution time": 0.356                   *Execution time of the analysis (in seconds)
+        ],
+        "ExecTime": 0.356                   *Execution time of the analysis (in seconds)
     }
     
 ### Log file
@@ -267,12 +284,12 @@ The Exec plugin provides information about the executable. The following fields 
 - **Library name:** libMPIBench
 
 The MPIBench plugin is actually a very tiny and non-intrusive benchmark, which provides some info about the quality of MPI communications.
-In order to keep the execution time low, only communications to and from the master node are considered. For this reason, **only the master node will provide the information**, even if the plugin is executed by each MPI process:
+In order to keep the execution time low, only communications to and from the master node are considered. For this reason, even if the plugin is executed by each MPI process, only the node masters will provide information.
 The following fields are created in the output file:
 
-- **mpibenchPingPong:**             Ping pong time between the master node and the other computing nodes. Standard deviation (in percentage) is provided too.
-- **mpibenchBandwidthPingPong:**    Ping pong bandwidth between the master node and the other computing nodes. Standard deviation (in percentage) is provided too.
-- **mpibenchBandwidthBcast**        MPI Broadcast bandwidth, achieved when bradcasting from the master node
+- **mpibenchBandwidthBcast**        MPI Broadcast bandwidth, achieved when bradcasting from the master node. Value is written only by the global master.
+- **mpibenchPingPong:**             Ping pong with the global master node. Value is written only by the masters of each node, except the global master.
+- **mpibenchBandwidthPingPong:**    Ping pong bandwidth with the global master node. Value is written only by the masters of each node, except the global master.
 
 
 ## Advanced use
