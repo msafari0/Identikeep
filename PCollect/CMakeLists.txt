@@ -31,10 +31,6 @@ target_link_libraries(identikeep
     ${MPI_LIBRARIES}
 )
 
-if (Boost_FOUND)
-  target_link_libraries( PCollect ${Boost_LIBRARIES} )
-endif()
-
 IF(USE_OpenMP)
   FIND_PACKAGE(OpenMP)
   IF(OPENMP_FOUND)
