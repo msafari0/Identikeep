@@ -155,8 +155,10 @@ bool MPIBench::Collect(int argc, char *argv[])
         bcast_dev=sqrt(bcast_ss/double(NTRIES) - bcast*bcast);
         int bcast_perc = int( bcast_dev / bcast * 100. + 0.5);
       
-        std::string title="mpibenchBandwidthBcast - Pack size: " +std::to_string(array_size/1000000.) + "MB";
-        Item<float> i = Item<float>(title, "MB/s", MATCHALL, bcast);
+//         std::string title="mpibenchBandwidthBcast - Pack size: " +std::to_string(array_size/1000000.) + "MB";
+        std::string title="mpibenchBcastBandwidth";
+        std::string unit="MB/s (+/- "+std::to_string(bcast_perc)+"%) - Pack size: " +std::to_string(array_size/1000000.) + "MB";
+        Item<float> i = Item<float>(title, unit, MATCHALL, bcast);
         m_items.floats.push_back(i);
     }
     else{
@@ -176,11 +178,13 @@ bool MPIBench::Collect(int argc, char *argv[])
             
         
         std::string title="mpibenchPingPong";
-        Item<float> i = Item<float>(title, "ms", MATCHALL, ping_time );
+        std::string unit="ms (+/- "+std::to_string(ping_time_perc)+"%)";
+        Item<float> i = Item<float>(title, unit, MATCHALL, ping_time );
         m_items.floats.push_back(i);
 
-        title="mpibenchPingPongBandwidth - Pack size: " +std::to_string(array_size/1000000.) + "MB";
-        i = Item<float>(title, "MB/s", MATCHALL, bandwidth);
+        title="mpibenchPingPongBandwidth";
+        unit="MB/s (+/- "+std::to_string(bandwidth_perc)+"%) - Pack size: " +std::to_string(array_size/1000000.) + "MB";
+        i = Item<float>(title, unit, MATCHALL, bandwidth);
         m_items.floats.push_back(i); 
         
     }
