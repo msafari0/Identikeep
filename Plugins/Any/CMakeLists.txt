@@ -1,5 +1,4 @@
 
-
 FOREACH(subdir MPI)
   ADD_SUBDIRECTORY(${subdir})
 ENDFOREACH()
@@ -16,3 +15,9 @@ find_package(MKL)
 if(MKL_FOUND)
   ADD_SUBDIRECTORY(MKL)
 endif()
+
+find_package(CUDA)
+if(CUDA_FOUND)
+  ADD_SUBDIRECTORY(CUDA)
+endif()
+
