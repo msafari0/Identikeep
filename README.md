@@ -274,7 +274,7 @@ The Exec plugin provides information about the executable. The following fields 
 
 - **execPath:**         Absolute path to the executable
 - **execSize:**         Size of the executable
-- **execLastModified**  Date of the executable last modification (or creation)
+- **execLastModified:**  Date of the executable last modification (or creation)
 
 **The plugin runs only once per computing node.**
 
@@ -287,9 +287,25 @@ The MPIBench plugin is actually a very tiny and non-intrusive benchmark, which p
 In order to keep the execution time low, only communications to and from the master node are considered. For this reason, even if the plugin is executed by each MPI process, only the node masters will provide information.
 The following fields are created in the output file:
 
-- **mpibenchBandwidthBcast**        MPI Broadcast bandwidth, achieved when bradcasting from the master node. Value is written only by the global master.
+- **mpibenchBandwidthBcast:**        MPI Broadcast bandwidth, achieved when bradcasting from the master node. Value is written only by the global master.
 - **mpibenchPingPong:**             Ping pong with the global master node. Value is written only by the masters of each node, except the global master.
 - **mpibenchBandwidthPingPong:**    Ping pong bandwidth with the global master node. Value is written only by the masters of each node, except the global master.
+
+
+
+###### CUDA
+
+- **Name:** CUDA
+- **Library name:** libInfoCUDA
+
+The CUDA plugin provides information about the NVIDIA GPUs installed on the node and accessible by the host. Information is collected via the CUDA library. The following fields are created in the output file:
+
+- **cudaDevice:**       List of the names of the detected GPUs
+- **cudaVersion:**      CUDA version for each detected device (Major.minor)
+- **cudaClock:**        Clock frequency of GPU cores for each device
+- **cudaTotMem:**       Total installe memory for each GPU
+
+**The plugin runs only once per computing node.**
 
 
 ## Advanced use
