@@ -17,7 +17,7 @@ public:
     std::string Name() {return "IOBench";}
     std::string Description() {return "Short I/O benchmark";}
     bool FreeText() {return false;}
-    bool OnePerNode() {return false;}
+    bool OnePerNode() {return true;}
         
 private:
     Items m_items;
