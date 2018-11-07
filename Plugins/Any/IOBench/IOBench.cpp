@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "IOBench.h"
 #include <cmath>
-#include <time.h>
 #include <iostream>
 // Logging
 #include "plog/Log.h"
@@ -18,7 +17,7 @@ using namespace std;
 bool IOBench::Collect(int argc, char *argv[])
 {
     
-    clock_t tt;
+    double tt;
     bool is_ok = true;
 
     
@@ -44,21 +43,21 @@ bool IOBench::Collect(int argc, char *argv[])
     
     for(int i_tries=0; i_tries<TRIES; i_tries++){
         pFile = fopen (filename.c_str(), "wb");
-        tt=clock();
+        tt=MPI_Wtime();
         fwrite (buffer , sizeof(char), FSIZE, pFile);
-        tt=clock()-tt;
+        tt=MPI_Wtime()-tt;
         fclose (pFile);
-        float temp_time= float(tt)/CLOCKS_PER_SEC;
+        float temp_time= float(tt);
         float temp_speed= float(FSIZE*sizeof(char))/(temp_time*1000000.);
         write_sum+=temp_speed;
         write_ssum+=temp_speed*temp_speed;
         
         pFile = fopen (filename.c_str(), "rb");
-        tt=clock();       
+        tt=MPI_Wtime();       
         fread(buffer , sizeof(char), FSIZE, pFile);
-        tt=clock()-tt;
+        tt=MPI_Wtime()-tt;
         fclose (pFile);
-        temp_time= float(tt)/CLOCKS_PER_SEC;
+        temp_time= float(tt);
         temp_speed= float(FSIZE*sizeof(char))/(temp_time*1000000.);
         read_sum+=temp_speed;
         read_ssum+=temp_speed*temp_speed;
@@ -73,6 +72,7 @@ bool IOBench::Collect(int argc, char *argv[])
     write_speed_dev=sqrt(write_ssum/float(TRIES)-write_speed*write_speed);
     write_speed_dev_perc=int(write_speed_dev/write_speed*100.+0.5);
    
+    
     std::string title="iobenchWriteSpeed";
     std::string unit="MB/s (+/- "+std::to_string(write_speed_dev_perc)+"%) - Pack size: " +std::to_string(sizeof(char)*FSIZE/1000000.) + "MB";
     Item<float> iwrite = Item<float>(title, unit, MATCHALL, write_speed);
@@ -88,6 +88,9 @@ bool IOBench::Collect(int argc, char *argv[])
     unit="MB/s (+/- "+std::to_string(read_speed_dev_perc)+"%) - Pack size: " +std::to_string(sizeof(char)*FSIZE/1000000.) + "MB";
     Item<float> iread = Item<float>(title, unit, MATCHALL, read_speed);
     m_items.floats.push_back(iread);
+    
+ 
+
 
     return is_ok;
 };
