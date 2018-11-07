@@ -10,7 +10,7 @@
 
 #define FILENAME "IOBench.temp_"
 #define MINSIZE 1024*1024
-#define TRIES 8
+#define TRIES 10
 
 using namespace std;
 
@@ -30,10 +30,9 @@ bool IOBench::Collect(int argc, char *argv[])
     std::vector<float> file_size_mb;
     
     std::vector<int> file_size;
-    file_size.push_back(MINSIZE);
-    file_size.push_back(MINSIZE*8);
-    file_size.push_back(MINSIZE*64);
-    file_size.push_back(MINSIZE*512);
+    
+    for(int i=0; i<=6; i++)
+        file_size.push_back(MINSIZE*pow(2,i));
     
     std::string filename=FILENAME+std::to_string(Rank_global);
     
