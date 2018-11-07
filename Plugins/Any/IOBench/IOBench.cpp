@@ -1,3 +1,4 @@
+#include <mpi.h>
 #include <stdio.h>
 #include "IOBench.h"
 #include <cmath>
@@ -8,7 +9,7 @@
 
 #define MATCHALL match::list | match::node | match::world
 
-#define FILENAME "IOBench.temp"
+#define FILENAME "IOBench.temp_"
 #define FSIZE 1024*1024*8
 #define TRIES 16
 
@@ -20,6 +21,10 @@ bool IOBench::Collect(int argc, char *argv[])
     clock_t tt;
     bool is_ok = true;
 
+    
+    int Rank_global=0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &Rank_global);
+    
     float write_speed, write_speed_dev;
     int   write_speed_dev_perc;
     float write_sum=0;
@@ -30,6 +35,7 @@ bool IOBench::Collect(int argc, char *argv[])
     float read_sum=0;
     float read_ssum=0;
     
+    std::string filename=FILENAME+std::to_string(Rank_global);
     
     LOG_VERBOSE << "Parsing " << this->Name() << " info...";
     
@@ -37,7 +43,7 @@ bool IOBench::Collect(int argc, char *argv[])
     char *buffer = new char[FSIZE];
     
     for(int i_tries=0; i_tries<TRIES; i_tries++){
-        pFile = fopen (FILENAME, "wb");
+        pFile = fopen (filename.c_str(), "wb");
         tt=clock();
         fwrite (buffer , sizeof(char), FSIZE, pFile);
         tt=clock()-tt;
@@ -47,7 +53,7 @@ bool IOBench::Collect(int argc, char *argv[])
         write_sum+=temp_speed;
         write_ssum+=temp_speed*temp_speed;
         
-        pFile = fopen (FILENAME, "rb");
+        pFile = fopen (filename.c_str(), "rb");
         tt=clock();       
         fread(buffer , sizeof(char), FSIZE, pFile);
         tt=clock()-tt;
@@ -57,7 +63,7 @@ bool IOBench::Collect(int argc, char *argv[])
         read_sum+=temp_speed;
         read_ssum+=temp_speed*temp_speed;
         
-        remove(FILENAME);
+        remove(filename.c_str());
         
     }
     
