@@ -161,7 +161,7 @@ In this case, the output `sysinfo.json` will have the following structure:
                 ]
             },
         ],
-        "ExecTime": 0.356                   *Execution time of the analysis (in seconds)
+        "ExecTime": xx.xxxx                   *Execution time of the analysis (in seconds)
     }
     
 ### Log file
