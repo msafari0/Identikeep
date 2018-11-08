@@ -172,7 +172,7 @@ If a deeper level for log is required, each MPI process writes its own log file 
 Identikeep comes with some plugins, whose role is to inspect different features of the cluster.
 Here is a list of them.
 
-###### CPU
+#### CPU
 
 - **Name:** CPU
 - **Library name:** libInfoCPU
@@ -189,7 +189,7 @@ The plugin runs only once per computing node.
 **The plugin runs only once per computing node.**
 
 
-###### CMPI
+#### CMPI
 
 - **Name:** CMPI
 - **Library name:** libInfoMPI
@@ -202,7 +202,7 @@ The CMPI plugin provides information about the Message Passing Interface library
 **The plugin runs only once per computing node.**
 
 
-###### Env
+#### Env
 
 - **Name:** Env
 - **Library name:** libInfoEnv
@@ -214,7 +214,7 @@ The Env plugin provides information about the environment variables defined on t
 **The plugin runs only once per computing node.**
 
 
-###### MEM
+#### MEM
 
 - **Name:** MEM
 - **Library name:** libInfoMEM
@@ -225,7 +225,7 @@ The MEM plugin provides information about the system memory. The following field
 
 **The plugin runs only once per computing node.**
 
-###### OMP
+#### OMP
 
 - **Name:** OMP
 - **Library name:** libInfoOMP
@@ -241,7 +241,7 @@ The OMP plugin provides information about the OpenMP library installed on the sy
 - **openmpMaxActiveLevels:**   return value of omp_get_max_active_levels() ) function
 
 
-###### OS
+#### OS
 
 - **Name:** OS
 - **Library name:** libInfoOS
@@ -253,7 +253,7 @@ The OS plugin provides information about the Operative System installed on the n
 **The plugin runs only once per computing node.**
 
 
-###### Libs
+#### Libs
 
 - **Name:** Libs
 - **Library name:** libInfoLibs
@@ -265,7 +265,7 @@ The Libs plugin provides information about the shared libraries loaded by the ex
 **The plugin runs only once per computing node.**
 
 
-###### Exec
+#### Exec
 
 - **Name:** Exec
 - **Library name:** libInfoExec
@@ -278,7 +278,20 @@ The Exec plugin provides information about the executable. The following fields 
 
 **The plugin runs only once per computing node.**
 
-###### MPIBench
+
+#### FS
+
+- **Name:** FS
+- **Library name:** libInfoFS
+
+The FS plugin provides information concerning the filesystem. The following fields are written to the output file:
+
+- **fsType:**           Filesystem type (e.g. ext3, ext4, gpfs, nfs)
+- **fsBlockSize:**      Block size of the filesystem
+
+**The plugin runs only once per computing node.**
+
+#### MPIBench
 
 - **Name:** MPIBench
 - **Library name:** libMPIBench
@@ -293,7 +306,7 @@ The following fields are created in the output file:
 
 
 
-###### CUDA
+#### CUDA
 
 - **Name:** CUDA
 - **Library name:** libInfoCUDA
@@ -306,6 +319,7 @@ The CUDA plugin provides information about the NVIDIA GPUs installed on the node
 - **cudaTotMem:**       Total installe memory for each GPU
 
 **The plugin runs only once per computing node.**
+
 
 
 ## Advanced use
