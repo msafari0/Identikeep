@@ -1,6 +1,6 @@
 #include <pugg/Kernel.h>
 
-#include "IOBench.h"
+#include "FS.h"
 
 #ifdef _WIN32
 #  define EXPORTIT __declspec( dllexport )
@@ -11,5 +11,5 @@
 
 extern "C" EXPORTIT void register_pugg_plugin(pugg::Kernel* kernel)
 {
-	kernel->add_driver(new IOBenchDriver());
+	kernel->add_driver(new FSDriver());
 }
