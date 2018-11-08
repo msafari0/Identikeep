@@ -19,6 +19,8 @@ As of today, Identikeep can be compiled with the following compilers:
   * PGI > 17
   * Cray compilers
 
+**Important note:** Identikeep is in principle designed to run on both Windows and Unix-like operative systems. However, the most part of the software plugins are specifically designed for operative systems that follows the POSIX standard.
+
 
 ## Compilation
 
