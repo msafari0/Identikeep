@@ -177,7 +177,7 @@ bool MPIBench::Collect(int argc, char *argv[])
         int bandwidth_perc = int( bandwidth_dev / bandwidth * 100. + 0.5);
             
         
-        std::string title="mpibenchPingPong";
+        std::string title="mpibenchPingPongTime";
         std::string unit="ms (+/- "+std::to_string(ping_time_perc)+"%)";
         Item<float> i = Item<float>(title, unit, MATCHALL, ping_time );
         m_items.floats.push_back(i);
