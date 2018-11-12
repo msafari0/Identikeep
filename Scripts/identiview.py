@@ -98,7 +98,7 @@ def match_field(global_list, field_name):
     field_list=[]
     namelist=field_name.split(",");
     for value in global_list:
-        if value[3] in namelist:
+        if value[3] in namelist or field_name=="":
             if value[3] not in field_list:
                 field_list.append(value[3])
     
