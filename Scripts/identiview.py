@@ -1,4 +1,5 @@
-#!@PYTHON_EXECUTABLE@
+#!/usr/bin/python
+##!@PYTHON_EXECUTABLE@
 
 import json
 import sys
@@ -96,8 +97,9 @@ def print_field(global_list, field_list):
         
 def match_field(global_list, field_name):
     field_list=[]
+    namelist=field_name.split(",");
     for value in global_list:
-        if value[3].find(field_name)>=0:
+        if value[3] in namelist:
             if value[3] not in field_list:
                 field_list.append(value[3])
     
@@ -106,15 +108,17 @@ def match_field(global_list, field_name):
 
 def filter_node(global_list, nodename):
     filtered_list=[]
+    nodelist=nodename.split(",")
     for i in range(0, len(global_list)):
-        if global_list[i][0]==nodename:
+        if global_list[i][0] in nodelist:
             filtered_list.append(global_list[i])
     return filtered_list
 
 def filter_rank(global_list, procrank):
     filtered_list=[]
+    proclist=procrank.split(",")
     for i in range(0, len(global_list)):
-        if int(global_list[i][1])==int(procrank):
+        if str(global_list[i][1]) in proclist:
             filtered_list.append(global_list[i])
     return filtered_list
 

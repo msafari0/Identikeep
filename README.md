@@ -416,15 +416,15 @@ restrict the analysis to the field FIELDNAME.
 restrict the analysis to the process with rank RANK.
 
 These last three options (i.e. `-f`, `-r` and `-n`) can be combined together or with `-lf` and `-ln`. 
-
+Moreover, `-f`, `-r` and `-n` accepts multiple arguments, separated by commas (",")
 
 For example, to have a list of the plugins that were executed by process with rank 134, just type:
 
     ./identiview sysinfo.json -r 134 -lf
 
-Moreover, to view the version of the OpenMP library loaded by the processes on node `r103c04s03`, run:
+Moreover, to view the version of the OpenMP library loaded by the processes on node `r103c04s03` and `r103c04s04`, run:
 
-    ./identiview sysinfo.json -n r103c04s03 -f openmpVersion
+    ./identiview sysinfo.json -n r103c04s03,r103c04s04 -f openmpVersion
 
 For a summery of the described options, just type `./identiview --help`
 

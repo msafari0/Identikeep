@@ -20,4 +20,5 @@ option (USE_OpenMP "Use OpenMP" ON)
 
 add_subdirectory(Plugins)
 add_subdirectory(PCollect)
+add_subdirectory(Scripts)
 
