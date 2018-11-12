@@ -1,5 +1,4 @@
-#!/usr/bin/python
-##!@PYTHON_EXECUTABLE@
+#!@PYTHON_EXECUTABLE@
 
 import json
 import sys
@@ -142,9 +141,9 @@ def print_help():
     print "%24s" % "-ln, --list-nodes" + "\tlist all node names"
     print "%24s" % "-lf, --list-fields" + "\tlist all available fields in the .json file"
     print ""
-    print "%24s" % "-n, --node NODENAME" + "\tRestrict the analysis to node NODENAME"
-    print "%24s" % "-r, --rank RANK" + "\tRestrict the analysis to rank RANK"
-    print "%24s" % "-f, --field FIELDNAME" + "\tPrint only fields containing the string FIELDNAME in their names"
+    print "%24s" % "-n, --node NODENAME" + "\tRestrict the analysis to node NODENAME (accepts multiple arguments, separated by commas)"
+    print "%24s" % "-r, --rank RANK" + "\tRestrict the analysis to rank RANK (accepts multiple arguments, separated by commas)"
+    print "%24s" % "-f, --field FIELDNAME" + "\tPrint only fields containing the string FIELDNAME in their names (accepts multiple arguments, separated by commas)"
 
     
     
