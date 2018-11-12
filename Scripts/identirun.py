@@ -45,7 +45,10 @@ for a in mpi_args:
     identikeep_command+= " " + a
     mpi_command+=" " + a
     
-identikeep_command+=" " + path+"identikeep " + "-p="+path
+exec_clean=exec_candidate.replace("./","")
+comment="'Automatically created by identirun for executable " + exec_candidate + "'"    
+    
+identikeep_command+=" " + path+"identikeep " + " -p="+path + " -c="+comment + " -t="+exec_clean
 mpi_command+=" " + exec_candidate
 for a in exec_args:
     mpi_command+=" " + a
