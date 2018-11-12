@@ -365,4 +365,76 @@ should provide an output similar to:
 In order to use this _runtime analysis_ feature, `MyProg` **must be written in C/C++** and **must make use of MPI** (i.e. it must call `MPI_Init` and `MPI_Finalize`)
 
 
+## Identiview tool
+As said before, information collected by `identikeep` is written in a `.json` file, which can be easily interpreted. Many tools for representing `.json` data 
+in a nice format are available online.
+However, it may result hard to have a quick view on the collected data if `identikeep` has been executed on many nodes. For this reason, inside the Identikeep package, a tiny parsing tool, called `identiview` and written in Python 2, is available
+
+### Requirements
+`identiview` is automatically installed, along with `identikeep` and its plugins, in the `bin` directory, only if the `python` 2.7 interpreter is detected on the system.
+
+### Description
+`identiview` is a simple tool to inspect the `identikeep` output, written in a `.json` file. Its aim is to visualize specific system information in a more human-readable way. Some examples of its use follows.
+
+### Examples
+
+Assuming to have the `identikeep` analysis written in the file `sysinfo.json`, here are some examples:
+
+
+-   `./identiview sysinfo.json`
+
+prints out the whole content of `sysinfo.json`, in a more human-readable format
+
+
+-   `./identiview sysinfo.json --list-nodes`
+-   `./identiview sysinfo.json -ln`
+
+lists the nodes on which `identikeep` was executed, providing also the ranks of the processes that run on each of them.
+
+
+-   `./identiview sysinfo.json --list-fields`
+-   `./identiview sysinfo.json -lf`
+
+lists list all the fields (i.e. the properties of the system) that appears in the `sysinfo.json` file (`openmpVersion`, `cpuMhz` etc.).
+
+
+-   `./identiview sysinfo.json --node NODENAME`
+-   `./identiview sysinfo.json -n NODENAME`
+
+restrict the analysis to the node NODENAME.
+
+
+-   `./identiview sysinfo.json --field FIELDNAME`
+-   `./identiview sysinfo.json -f FIELDNAME`
+
+restrict the analysis to the field FIELDNAME.
+
+
+-   `./identiview sysinfo.json --rank RANK`
+-   `./identiview sysinfo.json -r RANK`
+
+restrict the analysis to the process with rank RANK.
+
+These last three options (i.e. `-f`, `-r` and `-n`) can be combined together or with `-lf` and `-ln`. 
+
+
+For example, to have a list of the plugins that were executed by process with rank 134, just type:
+
+    ./identiview sysinfo.json -r 134 -lf
+
+Moreover, to view the version of the OpenMP library loaded by the processes on node `r103c04s03`, run:
+
+    ./identiview sysinfo.json -n r103c04s03 -f openmpVersion
+
+For a summery of the described options, just type:
+    ./identiview --help
+
+
+
+
+
+
+
+
+
 
