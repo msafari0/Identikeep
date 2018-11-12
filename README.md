@@ -426,8 +426,7 @@ Moreover, to view the version of the OpenMP library loaded by the processes on n
 
     ./identiview sysinfo.json -n r103c04s03 -f openmpVersion
 
-For a summery of the described options, just type:
-    ./identiview --help
+For a summery of the described options, just type `./identiview --help`
 
 
 
