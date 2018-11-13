@@ -431,6 +431,39 @@ For a summery of the described options, just type `./identiview --help`
 
 
 
+## Identirun tool (experimental)
+
+As long as `identikeep` was conceived to run coupled with an other executable (for example a benchmark `mybenchmark`), the user must ensure that both `identikeep` and `mybenchmark` run with the same MPI configuration.
+For example, an practical way to do this could be
+
+    mpirun MPIRUN_OPTIONS identikeep IDENTIKEEP_OPTIONS
+    mpirun MPIRUN_OPTIONS mybenchmark MYBENCHMARK_OPTIONS
+
+This approach is somehow redundant and may lead to mistakes. 
+
+In order to simplify the execution of `identikeep`, a python-based tool named `identirun` is provided inside the Identikeep package. As the name suggests, it is a wrapper to `mpirun` which executes `identikeep` just before the main executable.
+For example, running:
+
+    identirun MPIRUN_OPTIONS mybenchmark MYBENCHMARK_OPTIONS
+
+should be equivalent to call
+
+    mpirun MPIRUN_OPTIONS identikeep -t=DATE_TIME
+    mpirun MPIRUN_OPTIONS mybenchmark MYBENCHMARK_OPTIONS
+
+The use of `identirun` doesn't allow to specify the `identikeep` options `IDENTIKEEP_OPTIONS`, such that the default options for `identikeep` are used.
+The output file produced by `identikeep` invoked by `identirun` has a suffix which indicates the main executable name and the date and time of the execution.
+For example, if the following command is executed at 14:35:12 of November 15, 2018
+
+    identirun -np 4 mybenchmark
+
+the output file name will be 
+
+    sysinfo_mybenchmark_20181115_143512.json
+    
+**NOTE:** `identirun` is currently under development
+
+
 
 
 
