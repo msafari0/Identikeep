@@ -50,7 +50,7 @@ for a in mpi_args:
 now = datetime.datetime.now()
 exec_date=now.strftime("%Y%m%d_%H%M%S")
     
-exec_clean=exec_candidate.replace("./","")
+exec_clean=os.path.basename(exec_candidate)
 comment="'Automatically created by identirun for executable " + exec_candidate + "'"    
     
 identikeep_command+=" " + path+"identikeep " + " -p="+path + " -c="+comment + " -t="+exec_clean+"_"+exec_date
