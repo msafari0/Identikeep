@@ -3,6 +3,7 @@ import sys
 import os 
 import platform
 import subprocess
+import datetime
 
 
 
@@ -44,22 +45,21 @@ mpi_command="mpirun"
 for a in mpi_args:
     identikeep_command+= " " + a
     mpi_command+=" " + a
+
+
+now = datetime.datetime.now()
+exec_date=now.strftime("%Y%m%d_%H%M%S")
     
 exec_clean=exec_candidate.replace("./","")
 comment="'Automatically created by identirun for executable " + exec_candidate + "'"    
     
-identikeep_command+=" " + path+"identikeep " + " -p="+path + " -c="+comment + " -t="+exec_clean
+identikeep_command+=" " + path+"identikeep " + " -p="+path + " -c="+comment + " -t="+exec_clean+"_"+exec_date
 mpi_command+=" " + exec_candidate
 for a in exec_args:
     mpi_command+=" " + a
 
-
-print identikeep_command
-print mpi_command
-
-
-print "Running identikeep..."
+print "Running identikeep with command '" + identikeep_command + "'"
 os.system(identikeep_command)
 
-print "Running " + exec_candidate + " ..."
-subprocess.call(mpi_command, shell=True)
+print "Running " + exec_candidate + " with command '" + mpi_command + "'"
+os.system(mpi_command)
