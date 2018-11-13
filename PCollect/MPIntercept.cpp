@@ -52,7 +52,7 @@ int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
     options = new PCollect_options;
     options->LoadEnv();
 
-    int ierr = PMPI_Init( argc, argv );
+    int ierr = PMPI_Init_thread( argc, argv, required, provided );
     int Rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
 
