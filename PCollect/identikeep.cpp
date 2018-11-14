@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 //     int ierr = PMPI_Init ( &argc, &argv );
     
     int prov_thread_level=-1;
-    int ierr = MPI_Init_thread(&argc, &argv , MPI_THREAD_MULTIPLE , &prov_thread_level);
+    int ierr = PMPI_Init_thread(&argc, &argv , MPI_THREAD_MULTIPLE , &prov_thread_level);
     
     if (ierr != 0) {
         std::cerr << "FATAL: could not initialize MPI." << std::endl;

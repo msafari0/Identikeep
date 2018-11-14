@@ -323,6 +323,63 @@ The CUDA plugin provides information about the NVIDIA GPUs installed on the node
 **The plugin runs only once per computing node.**
 
 
+### Adding plugins
+There are two ways to implement new plugins. The first (raccomended) one is to write it following the template in the folder `Plugins/Template`, ant then compile it as a shared module.
+
+A second easier but less efficient and less powerful way is to write a stand-alone program, e.g. `myextension.sh`, and place it in a folder named `extensions` inside the plugin `bin` folder.
+All the programs inside the `extensions` folder will be executed by the **Extensions** plugin. Each extension **must write the following values in the standard output**:
+
+- Field name:
+
+        Name: field_name
+
+- Value type, which can be `string`, `integer` or `float`
+
+        Type: value_type
+
+- Value, whose form depends on the Type:
+
+        Value: field_value
+    
+- Value unit (optional)
+
+        Unit: field_unit
+
+- Log message (optional), reported by identikeep log file
+
+        Message: my_message
+        
+Value is the only field that can be repeated. In this case, all the values will be saved in the output file as a list.
+For example, the following bash script collects the information on the CPU frequencies:
+
+    #!/bin/bash
+    echo "Name: MyCpuFreq"
+    echo "Type: float"
+
+    array=(`cat /proc/cpuinfo | sed  -rn 's/[cC]pu MHz[ \t]+:[ \t]+([[:digit:]]+.[[:digit:]]+)/\1 /gp'`)
+    ncores=${#array[@]}
+
+    for i in $(seq 0 $(($ncores-1)))
+    do
+            echo Value: ${array[i]}
+    done
+
+    echo "Unit: Mhz"
+
+If this script is placed in the foled `bin/extensions`, a field named `MyCpuFreq` will be created in the plugin `Extensions`, which will contains a list of the CPU frequencies.
+
+This approach clearly has some limitations:
+
+- Extensions cannot access the parameters concerning MPI, such that they cannot make use of MPI calls. So, extensions can be used only to collect **local** information. 
+- Moreover, it is required that each extension is able to run on each node.
+- At the current implementation, each extension can return only one field (this fact may change in the future)
+
+The main advantages are, instead:
+
+- Extensions are much simpler to write 
+- The user is free to code the extensions in any language (bash, python, C/C++, Fortran, etc.)
+
+
 
 ## Advanced use
 Identikeep provides a tool to intercept the MPI calls of an executable via the PMPI interface. If we need to run Identikeep to have a snapshot of the system configuration when a program `MyProg` is launched, there are two different ways.

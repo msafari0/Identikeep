@@ -270,7 +270,10 @@ void PCollect(PCollect_options &options)
         if ( inspector.OnePerNode() && (node_rank != MASTER) )
             continue;
 
-        bool is_ok = inspector.Collect(NULL, NULL);
+        char* plugpath[1];
+        plugpath[0]=new char[256];
+        strcpy(plugpath[0],options.path.c_str());
+        bool is_ok = inspector.Collect(1, plugpath);
         
         if (!is_ok) LOG_ERROR << "Failed loading data for plugin " << inspector.Name();
         

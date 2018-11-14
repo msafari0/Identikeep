@@ -20,3 +20,6 @@ find_package(CUDA)
 if(CUDA_FOUND)
   ADD_SUBDIRECTORY(CUDA)
 endif()
+
+ADD_SUBDIRECTORY(Extensions)
+
