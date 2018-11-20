@@ -1,4 +1,4 @@
-# Identikeep
+![# Identikeep](logo.png)
 
 Identikeep is a plugin based tool to collect information on the hardware and 
 the software implementation of HPC clusters.
