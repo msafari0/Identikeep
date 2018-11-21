@@ -34,6 +34,7 @@
 #include "Utils.h"
 
 #define MASTER 0
+#define PRINTMATCH 0
 
 
 using namespace std;
@@ -285,7 +286,7 @@ void PCollect(PCollect_options &options)
         // collect and store strings
         for (auto n : data.strings) {
           Value fieldObj(kObjectType);
-          fieldObj.AddMember("match", n.match(), allocator);
+          if(PRINTMATCH) fieldObj.AddMember("match", n.match(), allocator);
 
           Value array(kArrayType);          
           for (auto m : n.value()) {
@@ -301,7 +302,7 @@ void PCollect(PCollect_options &options)
         // collect and store floats
         for (auto n : data.floats) {
           Value fieldObj(kObjectType);
-          fieldObj.AddMember("match", n.match(), allocator);
+          if(PRINTMATCH) fieldObj.AddMember("match", n.match(), allocator);
           Value s(n.unit().c_str(), allocator);
           fieldObj.AddMember("unit",s , allocator);
 
@@ -318,7 +319,7 @@ void PCollect(PCollect_options &options)
         // collect and store ints
         for (auto n : data.integers) {
           Value fieldObj(kObjectType);
-          fieldObj.AddMember("match", n.match(), allocator);
+          if(PRINTMATCH) fieldObj.AddMember("match", n.match(), allocator);
           Value s(n.unit().c_str(), allocator);
           fieldObj.AddMember("unit",s , allocator);
 
@@ -336,7 +337,7 @@ void PCollect(PCollect_options &options)
         // collect and store bools
         for (auto n : data.bools) {
           Value fieldObj(kObjectType);
-          fieldObj.AddMember("match", n.match(), allocator);
+          if(PRINTMATCH) fieldObj.AddMember("match", n.match(), allocator);
           Value s(n.unit().c_str(), allocator);
           fieldObj.AddMember("unit",s , allocator);
 
