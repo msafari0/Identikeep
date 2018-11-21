@@ -239,8 +239,8 @@ The OMP plugin provides information about the OpenMP library installed on the sy
 - **openmpMaxThreads:**         return value of omp_get_max_threads function
 - **openmpThreadLimit:**        return value of omp_get_thread_limit function
 - **openmpNumProcs:**          return value of omp_get_num_procs() function
-- **openmpNested:**            return value of omp_get_nested() ) function
-- **openmpMaxActiveLevels:**   return value of omp_get_max_active_levels() ) function
+- **openmpNested:**            return value of omp_get_nested() function
+- **openmpMaxActiveLevels:**   return value of omp_get_max_active_levels() function
 
 
 #### OS
@@ -369,7 +369,7 @@ For example, the following bash script collects the information on the CPU frequ
 
     echo "Unit: Mhz"
 
-If this script is placed in the foled `bin/extensions`, a field named `MyCpuFreq` will be created in the plugin `Extensions`, which will contains a list of the CPU frequencies.
+If this script is placed in the foled `bin/extensions`, a field named `MyCpuFreq` will be created in the plugin `Extensions`, which will contain a list of the CPU frequencies.
 
 This approach clearly has some limitations:
 
