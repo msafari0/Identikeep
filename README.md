@@ -315,10 +315,13 @@ The following fields are created in the output file:
 
 The CUDA plugin provides information about the NVIDIA GPUs installed on the node and accessible by the host. Information is collected via the CUDA library. The following fields are created in the output file:
 
-- **cudaDevice:**       List of the names of the detected GPUs
-- **cudaVersion:**      CUDA version for each detected device (Major.minor)
-- **cudaClock:**        Clock frequency of GPU cores for each device
-- **cudaTotMem:**       Total installe memory for each GPU
+- **cudaDevice:**            List of the names of the detected GPUs
+- **cudaTotMem:**            Total installed memory for each GPU
+- **cudaClock:**             Clock frequency of GPU cores for each device
+- **cudaDriverVersion:**     CUDA driver version
+- **cudaRuntimeVersion:**    CUDA runtime version
+- **cudaComputeCapability:** CUDA compute capability
+
 
 **The plugin runs only once per computing node.**
 
