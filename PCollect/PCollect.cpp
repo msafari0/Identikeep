@@ -276,7 +276,7 @@ void PCollect(PCollect_options &options)
         strcpy(plugpath[0],options.path.c_str());
         bool is_ok = inspector.Collect(1, plugpath);
         
-        if (!is_ok) LOG_ERROR << "Failed loading data for plugin " << inspector.Name();
+        if (!is_ok and Rank==MASTER) LOG_ERROR << "Failed loading data for plugin " << inspector.Name();
         
 
         // populate json using type specific information.
