@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
     int prov_thread_level=-1;
     int ierr = PMPI_Init_thread(&argc, &argv , MPI_THREAD_MULTIPLE , &prov_thread_level);
     
+    
     if (ierr != 0) {
         std::cerr << "FATAL: could not initialize MPI." << std::endl;
         return -1;
@@ -51,6 +52,8 @@ int main(int argc, char *argv[])
     MPI_Comm_size(MPI_COMM_WORLD, &Size);
 
     PCollect_options options;
+    options.LoadEnv();
+
     auto cmdl = argh::parser(argc, argv);
 
     //Print help 
@@ -62,7 +65,7 @@ int main(int argc, char *argv[])
     //Check if path is present and save it
     
     
-    options.path=cmdl({ "-p", "--plugins"}, "").str();
+    options.path=cmdl({ "-p", "--plugins"}, options.path.c_str()).str();
     
     if(options.path==""){
        options.path=".";        
