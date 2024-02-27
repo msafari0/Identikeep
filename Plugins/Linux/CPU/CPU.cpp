@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <sys/utsname.h>
 
-
+ 
 // Logging
 #include "plog/Log.h"
 
