@@ -1,7 +1,7 @@
 #include <vector>
 #include <sys/types.h>
 #include <sys/stat.h>
-
+#include <algorithm>
 // Logging
 #include "plog/Log.h"
 

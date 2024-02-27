@@ -3,7 +3,7 @@
 #include "Utils.h"
 #include "multire.h"
 #include "CPU.h"
-
+#include <algorithm>
 #include <sys/utsname.h>
 
 

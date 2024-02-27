@@ -12,10 +12,10 @@ mv argh-1.2.0/argh.h include/
 rmdir argh-1.2.0
 mv argh.zip archives/
 
-wget -O plog.zip https://github.com/SergiusTheBest/plog/archive/master.zip
-unzip plog.zip plog-master/include/*
-mv plog-master/include/plog include/
-rmdir plog-master/include && rmdir plog-master
+wget -O plog.zip https://github.com/SergiusTheBest/plog/archive/refs/tags/1.1.4.zip
+unzip plog.zip 
+mv plog-1.1.4/include/plog include/
+rm -r plog-1.1.4
 mv plog.zip archives/
 
 
