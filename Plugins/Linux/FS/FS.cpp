@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "multire.h"
-
+#include <array>
 #include "FS.h"
 
 // Logging
