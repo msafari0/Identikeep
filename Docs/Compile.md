@@ -23,6 +23,15 @@ If successuful, this procedure will create a directory `bin`, inside the `build`
     cmake -DDESC=intel_intelmpi_mkl -DCMAKE_BUILD_TYPE=Release ..
     make
 
+
+### Leonardo with IntelMPI+MKL+GPU
+
+    ./prepare.sh
+    module load intel-oneapi-mkl/2023.2.0 intel-oneapi-compilers/2023.2.1 intel-oneapi-mpi/2021.10.0 cuda/12.1 cmake
+    mkdir -p build && cd build
+    cmake -Wno-dev -DCMAKE_CXX_COMPILER=nvc++ -DDESC=intel_oneapi_mkl ..
+    make
+
 ### Galileo with IntelMPI+MKL
 
     ./prepare.sh
